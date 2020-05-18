@@ -1,89 +1,112 @@
-from geomdl.shapes import surface
+# imports
+import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
-import numpy as np
-from scipy.spatial.distance import cdist
 import sys
 from geomdl import utilities as utils
 from geomdl import NURBS
 from geomdl import exchange
 from geomdl import construct
 from geomdl import fitting
-from geomdl import control_points as cp
 from geomdl.visualization import VisMPL as vis
 from geomdl import compatibility as compat
-from geomdl import operations
 np.set_printoptions(threshold=sys.maxsize)
 from slice import slice
+from geomdl import operations
 
-def remove_3dpoint(points,loc):
-	x = points[:, 0]
-	x = np.delete(x, loc)
-	y = points[:, 1]
-	y = np.delete(y, loc)
-	z = points[:, 2]
-	z = np.delete(z, loc)
-	points = np.array([x,y,z]).T
-	return points
+# function that parameterizes into cylindrical coordinates
+def cylinder(x,y,z):
+    r = np.sqrt(x**2+y**2)
+    theta = round(np.arctan(y/x)*(180/np.pi))
+    z = z
+    return r,theta,z
 
-def map2cylinder(points):
+# function the parameterizes into cartesian coordinates
+def cart(r,theta,z):
+    x = r*np.cos(theta)
+    y = r*np.sin(theta)
+    z = z
+    return x,y,z
 
-	return u,v
+# load remapped RV data
+points = np.loadtxt("N2_RV_P0.txt")
+x = points[:, 0]
+y = points[:, 1]
+z = points[:, 2]
+A = []
 
-def main():
-	points = np.loadtxt("N2_RV_P0.txt")
-	zmin_loc_temp = np.where(points[:, 1] == 0)[0]
-	zmin_loc = zmin_loc_temp
-	points = remove_3dpoint(points,zmin_loc)
+# parameterize into cylindrical coordinates
+for i in range(0,len(z)):
+    A.append(cylinder(x[i],y[i],z[i]))
+A  = np.array(A)
 
-	# compute radius and height of the remapped RV	
-	radius = (points[:,0].max() - points[:,0].min())
-	height = points[:,2].max()
+# split RV into evenly spaced slices
+N = 6
+slice(N, points)
+slices = []
+temp = []
 
-	# generate the cylindrical surface
-	cylinder = surface.cylinder(radius,height)
+# store radii at each slice
+for j in range(0,len(slice.slices)):
+    temp.append(np.sqrt(slice.slices[j][:,0]**2 + slice.slices[j][:,1]**2))
+radius = []
+for i in range(0,len(temp)):
+    radius.append(temp[i].max())
 
-	# store the evaluated surface points in an array
-	cyl_pts = np.array(cylinder.evalpts)
+# create evenly spaced heights
+z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
-	# store the control points used to generate the cylindrical surface
-	cyl_cpts = np.array(cylinder.ctrlpts)	
-	print(height)
-	print(radius)
+# evenly spaced angles from 0 to 2pi
+theta = np.linspace(0,2*np.pi,N)
 
-	# plot the cylindrical surface and control points for visualization 
-	fig = plt.figure()
-	ax = plt.axes(projection="3d")
-	ax.scatter3D(cyl_pts[:,0],cyl_pts[:,1],cyl_pts[:,2])
-	ax.scatter3D(cyl_cpts[:,0],cyl_cpts[:,1],cyl_cpts[:,2])
-	ax.scatter3D(points[:,0],points[:,1],points[:,2])
+# parametrize data back into cartesian coordinates
+X = []
+for i in range(0,len(theta)):
+    for j in range(0,len(z)):
+        X.append(cart(radius[j],theta[i],z[j]))
+# these are now candidate control points
+X = np.array(X)
+print(X)
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.scatter(X[:,0],X[:,1],X[:,2])
+plt.show()
+np.savetxt("cpts_test.csv", X, delimiter=",")
 
-	a = cdist(cyl_cpts,points).min(axis=1)
-	test = np.zeros((len(cyl_cpts),3))
-	for i in range(0,len(cyl_cpts)):
-		test[i] = (cyl_cpts[i]/np.linalg.norm(cyl_pts[i]))*a[i]
-	ax.scatter3D(test[:,0],test[:,1],test[:,2])
+# setup pre reqs for surface fitting
+p_ctrlpts = X
+size_u = N
+size_v = N
+degree_u = 2
+degree_v = 3
+
+# Do global surface approximation
+surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
+
+# Extract curves from the approximated surface
+surf_curves = construct.extract_curves(surf)
+plot_extras = [
+    dict(
+        points=surf_curves['u'][0].evalpts,
+        name="u",
+        color="red",
+        size=10
+    ),
+    dict(
+        points=surf_curves['v'][0].evalpts,
+        name="v",
+        color="black",
+        size=10
+    )
+]
+surf.delta = 0.03
+surf.vis = vis.VisSurface()
+surf.render(extras=plot_extras)
 
 
-
-
-	# test = np.insert(test,[len(test),len(test),len(test)],[test[0],test[1],test[2]],axis = 0)
-	# print(test)
-	# np.savetxt("cpts_test.csv", test, delimiter=",")
-
-	# plt.show()
-	# ctrlpts = exchange.import_csv("cpts_test.csv")
-	# print(operations.refine_knotvector(surf, [2, 0]))
-	# print(len(ctrlpts))
-	# print(ctrlpts)
-	# size_u = 5
-	# size_v = 4
-	# degree_u = 3
-	# degree_v = 2
-
-	# # Do global surface approximation
-	# surf = fitting.approximate_surface(ctrlpts, size_u, size_v, degree_u, degree_v)
-	# surf.delta = 0.05
-	# surf.vis = vis.VisSurface()
-	# surf.render()	
-main()
+'''
+Next steps: 
+- get the evaluated points of generated surface
+- optimize (minimize) distance from generated surface to remapped RV
+- move control points based on this optimization
+'''
