@@ -51,7 +51,7 @@ for j in range(0,len(slice.slices)):
     temp.append(np.sqrt(slice.slices[j][:,0]**2 + slice.slices[j][:,1]**2))
 radius = []
 for i in range(0,len(temp)):
-    radius.append(temp[i].max())
+    radius.append(temp[i].mean())
 
 # create evenly spaced heights
 z = np.linspace(A[:,2].min(), A[:,2].max(), N)
@@ -77,7 +77,7 @@ np.savetxt("cpts_test.csv", X, delimiter=",")
 p_ctrlpts = X
 size_u = N
 size_v = N
-degree_u = 2
+degree_u = 3
 degree_v = 3
 
 # Do global surface approximation

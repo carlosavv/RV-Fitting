@@ -51,7 +51,7 @@ for j in range(0,len(slice.slices)):
     temp.append(np.sqrt(slice.slices[j][:,0]**2 + slice.slices[j][:,1]**2))
 radius = []
 for i in range(0,len(temp)):
-    radius.append(temp[i].max())
+    radius.append(temp[i].mean())
 
 # create evenly spaced heights
 z = np.linspace(A[:,2].min(), A[:,2].max(), N)
@@ -77,7 +77,7 @@ np.savetxt("cpts_test.csv", X, delimiter=",")
 p_ctrlpts = X
 size_u = N
 size_v = N
-degree_u = 2
+degree_u = 3
 degree_v = 3
 
 # Do global surface approximation
@@ -103,27 +103,24 @@ surf.delta = 0.03
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
 
-# surf = NURBS.Surface()
-# surf.delta = 0.05
-# print(len(p_ctrlpts))
-# p_weights = np.ones((len(p_ctrlpts)))
-# p_size_u = 7
-# p_size_v = 12
-# p_degree_u = 3
-# p_degree_v = 3
-# t_ctrlptsw = compat.combine_ctrlpts_weights(p_ctrlpts, p_weights)
-# n_ctrlptsw = compat.flip_ctrlpts_u(t_ctrlptsw, p_size_u, p_size_v)
-# n_knotvector_u = utils.generate_knot_vector(p_degree_u, p_size_u)
-# n_knotvector_v = utils.generate_knot_vector(p_degree_v, p_size_v)
-# surf.degree_u = p_degree_u
-# surf.degree_v = p_degree_v
-# surf.set_ctrlpts(n_ctrlptsw, p_size_u, p_size_v)
-# surf.knotvector_u = n_knotvector_u
-# surf.knotvector_v = n_knotvector_v
 
-# # operations.refine_knotvector(surf, [1, 2])
+'''
+Next steps: 
+- get the evaluated points of generated surface
+- optimize (minimize) distance from generated surface to remapped RV
+- move control points based on this optimization
+'''
 
-# vis_config = vis.VisConfig(ctrlpts=True, axes=True, legend=True)
-# surf.vis = vis.VisSurface(vis_config)
-# surf.evaluate()
-# surf.render()
+eval_surf = np.array(surf.evalpts)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.scatter(eval_surf[:,0],eval_surf[:,1],eval_surf[:,2])
+ax.scatter3D(points[:, 0],points[:, 1],points[:, 2])
+ax.scatter(X[:,0],X[:,1],X[:,2])
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.scatter(X[:,0],X[:,1],X[:,2])
+cpts = np.array(surf.ctrlpts)
+ax.scatter(cpts[:,0],cpts[:,1],cpts[:,2])
+plt.show()
