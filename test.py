@@ -41,7 +41,7 @@ for i in range(0,len(z)):
 A  = np.array(A)
 
 # split RV into evenly spaced slices
-N = 6
+N = 8
 slice(N, points)
 slices = []
 temp = []
@@ -58,6 +58,8 @@ z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
 theta = np.linspace(0,2*np.pi,N)
+
+# for each theta find points within eps of theta and take avg. radius of those points 
 
 # parametrize data back into cartesian coordinates
 X = []
@@ -76,7 +78,7 @@ np.savetxt("cpts_test.csv", X, delimiter=",")
 # setup pre reqs for surface fitting
 p_ctrlpts = X
 size_u = N
-size_v = N
+size_v = N-1
 degree_u = 3
 degree_v = 3
 

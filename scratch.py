@@ -4,57 +4,13 @@ from mpl_toolkits import mplot3d
 import sys
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
 np.set_printoptions(threshold=sys.maxsize)
+from slice import slice
 
-def slice(n, points):
-
-	# function that computes and stores equally spaced cross section slices of 3D data
-
-	x = points[:, 0]
-	y = points[:, 1]
-	z = points[:, 2]
-	fig = plt.figure()
-	ax = plt.axes(projection="3d")
-	ax.scatter3D(x, y, z) 	
-
-	bottom_bound = points[:, 2].min()
-	top_bound = points[:, 2].max()
-	slice.bins = np.linspace(bottom_bound, top_bound, n + 1)
-	bins = slice.bins
-	slice.slices = []
-	slices = slice.slices
-
-	for ii in range(len(bins) - 1):
-		slices.append(points[(points[:, 2] > bins[ii]) & (points[:, 2] < bins[ii + 1])])
-		if ii == range(len(bins)):
-			slices.append(points[(points[:, 2] == bins[ii+1])])
-
-	fig4 = plt.figure()
-	ax3 = plt.axes(projection="3d")
-	for i in range(len(slices)):
-		ax3.scatter(slices[i][:, 0], slices[i][:, 1], slices[i][:, 2])
-	plt.show()
-
-def main():
+def vertices(N,points):
 	# N = No. of slices - 1
-	N = 6
-	points = np.loadtxt("N2_RV_P0.txt")
-	# test = np.loadtxt("N2ED_cpts.txt")
 	slice(N, points)
 	slices = slice.slices
-	slice1 = slice.slices[0]
-
 	ranges = slice.bins
-	# np.savetxt("N2_RV_P0.csv", points, delimiter=",")
-
-	fig = plt.figure()
-	ax = plt.axes(projection="3d")
-	
-	# A = []	
-	# for i in range(0,len(slices)):
-	# 	A.append((slices[i][(slices[i][:,2] == slices[i][:,2].max())]))
-	# 	ax.scatter(A[i][0][0],A[i][0][1],A[i][0][2])
-	# np.savetxt("slice1.csv", slice1, delimiter=",")
-	# np.savetxt("N2ED_cpts.csv", test, delimiter=",")
 
 	hull_array = []
 	for i in range(0, len(slices)):
@@ -72,11 +28,6 @@ def main():
 
 	# get the vertices at each slice
 	for i in range(0, len(slices)):
-		# ax.scatter3D(
-		# slices[i][hull_array[i].vertices[:], 0],
-		# slices[i][hull_array[i].vertices[:], 1],
-		# np.ones((len(slices[i][hull_array[i].vertices[:], 1]))) * ranges[i],
-		# )
 		vertices.append(
 		[
 			slices[i][hull_array[i].vertices[:], 0],
@@ -107,9 +58,9 @@ def main():
 		for j in range(0,len(test[i])):
 			temp.append(test[i][j])
 	
-	convex_vertices = np.array(temp)  
-	ax.scatter3D(convex_vertices[:,0],convex_vertices[:,1],convex_vertices[:,2])
-	plt.show()
+	convex_vertices = np.array(temp)
+	print(len(convex_vertices))  
+	# ax.scatter3D(convex_vertices[:,0],convex_vertices[:,1],convex_vertices[:,2])
+	# plt.show()
 
-main()
-
+	return convex_vertices

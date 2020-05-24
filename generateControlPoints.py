@@ -51,7 +51,7 @@ for j in range(0,len(slice.slices)):
     temp.append(np.sqrt(slice.slices[j][:,0]**2 + slice.slices[j][:,1]**2))
 radius = []
 for i in range(0,len(temp)):
-    radius.append(temp[i].mean())
+    radius.append(temp[i].max())
 
 # create evenly spaced heights
 z = np.linspace(A[:,2].min(), A[:,2].max(), N)
