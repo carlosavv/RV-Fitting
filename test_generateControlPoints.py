@@ -67,7 +67,7 @@ theta = np.array(theta)
 # z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-theta = np.linspace(A[:,1].min(), 12*A[:,1].max(), N)
+theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
 # print(len(theta))
 
 # parametrize data back into cartesian coordinates
@@ -76,7 +76,7 @@ X = []
 for i in range(0,len(radius)):
     for j in range(0,len(theta)):
         X.append(cart(radius[i],theta[j],z[i]))
-# these are now candidate control points
+# these are now candidate data points
 X = np.array(X)
 
 fig = plt.figure()

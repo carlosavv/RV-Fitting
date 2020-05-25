@@ -41,7 +41,7 @@ for i in range(0,len(z)):
 A  = np.array(A)
 
 # split RV into evenly spaced slices
-N = 8
+N = 6
 slice(N, points)
 slices = []
 temp = []
@@ -78,7 +78,7 @@ np.savetxt("cpts_test.csv", X, delimiter=",")
 # setup pre reqs for surface fitting
 p_ctrlpts = X
 size_u = N
-size_v = N-1
+size_v = N
 degree_u = 3
 degree_v = 3
 
