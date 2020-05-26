@@ -45,10 +45,11 @@ N = 6
 slice(N, points)
 slices = []
 temp = []
+bins = slice.bins
 
 # store radii at each slice
 for j in range(0,len(slice.slices)):
-    temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],slice.slices[j][:,2]))
+    temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
 
 temp = np.array(temp)
 # radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
@@ -59,7 +60,7 @@ z = []
 for i in range(0,len(temp)):
     radius.append(temp[i][0].mean())
     theta.append(temp[i][1])
-    z.append(temp[i][2].max())
+    z.append(temp[i][2].mean())
 theta = np.array(theta)
 # for each theta find points within eps of theta and take avg. radius of those points 
 
@@ -84,12 +85,11 @@ ax = plt.axes(projection="3d")
 plt.title('Cartesian')
 ax.scatter(X[:,0],X[:,1],X[:,2])
 
-print(len(X))
 np.savetxt("cpts_test.csv", X, delimiter=",")
 
 # setup pre reqs for surface fitting
 p_ctrlpts = X
-size_u = N
+size_u = N+1
 size_v = N
 degree_u = 3
 degree_v = 3

@@ -25,6 +25,8 @@ def slice(n, points):
 
 	for ii in range(len(bins) - 1):
 		slices.append(points[(points[:, 2] > bins[ii]) & (points[:, 2] < bins[ii + 1])])
+		if bins[ii+1] == max(bins):
+			slices.append(points[(points[:, 2] > bins[ii]+(bins[ii+1]-bins[ii])/2) & (points[:,2] < max(bins))])
 
 	# fig4 = plt.figure()
 	# ax3 = plt.axes(projection="3d")
