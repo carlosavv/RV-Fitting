@@ -41,7 +41,7 @@ for i in range(0,len(z)):
 A  = np.array(A)
 
 # split RV into evenly spaced slices
-N = 6
+N = 5
 slice(N, points)
 slices = []
 temp = []
@@ -52,7 +52,6 @@ for j in range(0,len(slice.slices)):
     temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
 
 temp = np.array(temp)
-# radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
 radius = []
 theta = []
 z = []
@@ -61,22 +60,48 @@ for i in range(0,len(temp)):
     radius.append(temp[i][0].mean())
     theta.append(temp[i][1])
     z.append(temp[i][2].mean())
+
 theta = np.array(theta)
+theta = theta.reshape(-1,6).max(axis = 1)
+# a = []
+# for i in range(0,len(temp)):
+#     for j in range(0,len(temp[i][0])):
+#         a.append((temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]))
+
+
+# temp1 = np.array(a)
+# # radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
+# radius = temp1[:,0]
+# theta = temp1[:,1]
+# z = temp1[:,2]
+
+
+
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+plt.title('cylindrical')
+ax.scatter(radius,theta,z)
+
+
 # for each theta find points within eps of theta and take avg. radius of those points 
 
 # create evenly spaced heights
 # z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
+# theta = np.linspace(A[:,1].min() - np.pi/4, A[:,1].max() - np.pi/4, N)
 # print(len(theta))
 
 # parametrize data back into cartesian coordinates
+
+###########################
 
 X = []
 for i in range(0,len(radius)):
     for j in range(0,len(theta)):
         X.append(cart(radius[i],theta[j],z[i]))
+
 # these are now candidate data points
 X = np.array(X)
 
@@ -88,6 +113,8 @@ ax.scatter(X[:,0],X[:,1],X[:,2])
 np.savetxt("cpts_test.csv", X, delimiter=",")
 
 # setup pre reqs for surface fitting
+
+#################################
 p_ctrlpts = X
 size_u = N+1
 size_v = N
@@ -95,7 +122,7 @@ degree_u = 3
 degree_v = 3
 
 # Do global surface approximation
-surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v,centripetal = True)
+surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
 
 # Extract curves from the approximated surface
 surf_curves = construct.extract_curves(surf)

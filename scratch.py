@@ -4,6 +4,7 @@ from mpl_toolkits import mplot3d
 from slice import slice
 import sys
 np.set_printoptions(threshold=sys.maxsize)
+from slice import segment
 
 
 points = np.loadtxt("N2_RV_P0.txt")
@@ -31,10 +32,13 @@ for i in range(0,len(temp)):
 
 layers = np.array(a)
 
+x = np.array(layers[:,0])
+y = np.array(layers[:,1])
+z = np.array(layers[:,2])
+
 fig = plt.figure()
 ax = plt.axes(projection="3d")
-
-for i in range(0,len(temp)):
-	ax.scatter(temp[i][0],temp[i][1],temp[i][2])
+ax.scatter(layers[:,0],layers[:,1],layers[:,2])
 
 plt.show()
+

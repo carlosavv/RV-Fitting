@@ -3,21 +3,17 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits import mplot3d
 import sys
-from geomdl import utilities as utils
-from geomdl import NURBS
-from geomdl import exchange
-from geomdl import construct
 from geomdl import fitting
 from geomdl.visualization import VisMPL as vis
-from geomdl import compatibility as compat
-np.set_printoptions(threshold=sys.maxsize)
 from slice import slice
-from geomdl import operations
+from tools import preProcess
+from geomdl import construct
+# import scipy.optimize.least_squares as ls
 
 # function that parameterizes into cylindrical coordinates
 def cylinder(x,y,z):
     r = np.sqrt(x**2+y**2)
-    theta = round(np.arctan(y/x)*(180/np.pi))
+    theta = np.arctan2(y,x)
     z = z
     return r,theta,z
 
@@ -28,11 +24,15 @@ def cart(r,theta,z):
     z = z
     return x,y,z
 
+
+# def 
 # load remapped RV data
 points = np.loadtxt("N2_RV_P0.txt")
+# points = preProcess(points)
 x = points[:, 0]
 y = points[:, 1]
 z = points[:, 2]
+
 A = []
 
 # parameterize into cylindrical coordinates
@@ -45,37 +45,51 @@ N = 6
 slice(N, points)
 slices = []
 temp = []
+bins = slice.bins
 
 # store radii at each slice
 for j in range(0,len(slice.slices)):
-    temp.append(np.sqrt(slice.slices[j][:,0]**2 + slice.slices[j][:,1]**2))
+    temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
+
+temp = np.array(temp)
+# radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
 radius = []
+theta = []
+z = []
+
 for i in range(0,len(temp)):
-    radius.append(temp[i].max())
+    radius.append(temp[i][0].mean())
+    theta.append(temp[i][1])
+    z.append(temp[i][2].mean())
+theta = np.array(theta)
+# for each theta find points within eps of theta and take avg. radius of those points 
 
 # create evenly spaced heights
-z = np.linspace(A[:,2].min(), A[:,2].max(), N)
+# z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-theta = np.linspace(0,2*np.pi,N)
+theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
+# print(len(theta))
 
 # parametrize data back into cartesian coordinates
+
 X = []
-for i in range(0,len(theta)):
-    for j in range(0,len(z)):
-        X.append(cart(radius[j],theta[i],z[j]))
-# these are now candidate control points
+for i in range(0,len(radius)):
+    for j in range(0,len(theta)):
+        X.append(cart(radius[i],theta[j],z[i]))
+# these are now candidate data points
 X = np.array(X)
-print(X)
+
 fig = plt.figure()
 ax = plt.axes(projection="3d")
+plt.title('Cartesian')
 ax.scatter(X[:,0],X[:,1],X[:,2])
-plt.show()
+
 np.savetxt("cpts_test.csv", X, delimiter=",")
 
 # setup pre reqs for surface fitting
 p_ctrlpts = X
-size_u = N
+size_u = N+1
 size_v = N
 degree_u = 3
 degree_v = 3
@@ -90,13 +104,13 @@ plot_extras = [
         points=surf_curves['u'][0].evalpts,
         name="u",
         color="red",
-        size=10
+        size= 5
     ),
     dict(
         points=surf_curves['v'][0].evalpts,
         name="v",
-        color="black",
-        size=10
+        color="purple",
+        size= 5
     )
 ]
 surf.delta = 0.03
@@ -110,3 +124,17 @@ Next steps:
 - optimize (minimize) distance from generated surface to remapped RV
 - move control points based on this optimization
 '''
+
+eval_surf = np.array(surf.evalpts)
+
+fig = plt.figure()
+ax = plt.axes(projection="3d")
+ax.scatter(eval_surf[:,0],eval_surf[:,1],eval_surf[:,2])
+ax.scatter3D(points[:, 0],points[:, 1],points[:, 2])
+ax.scatter(X[:,0],X[:,1],X[:,2])
+cpts = np.array(surf.ctrlpts)
+fig = plt.figure()
+ax = plt.axes(projection = "3d")
+ax.scatter(X[:,0],X[:,1],X[:,2])
+ax.scatter(cpts[:,0],cpts[:,1],cpts[:,2])
+plt.show()
