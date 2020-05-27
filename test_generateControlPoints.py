@@ -56,13 +56,25 @@ radius = []
 theta = []
 z = []
 
-for i in range(0,len(temp)):
-    radius.append(temp[i][0].mean())
-    theta.append(temp[i][1])
-    z.append(temp[i][2].mean())
 
-theta = np.array(theta)
-theta = theta.reshape(-1,6).max(axis = 1)
+# for i in range(0,len(temp)):
+# radius.append(temp[0][0].min())
+# z.append(temp[0][2].min())
+# radius.append(temp[0][0].max())
+# z.append(temp[0][2].max())
+for j in range(0,len(temp)):
+    radius.append(temp[j][0].mean())
+    theta.append(temp[j][1].mean())
+    z.append(temp[j][2].mean())
+# for i in range(0,len(temp)):
+#     radius.append(temp[i][0].max())
+#     z.append(temp[i][2].max())
+
+# radius.append(temp[-1][0].min())
+# z.append(temp[-1][2].min())
+# radius.append(temp[-1][0].max())
+# z.append(temp[-1][2].max())
+
 # a = []
 # for i in range(0,len(temp)):
 #     for j in range(0,len(temp[i][0])):
@@ -70,7 +82,6 @@ theta = theta.reshape(-1,6).max(axis = 1)
 
 
 # temp1 = np.array(a)
-# # radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
 # radius = temp1[:,0]
 # theta = temp1[:,1]
 # z = temp1[:,2]
@@ -78,10 +89,10 @@ theta = theta.reshape(-1,6).max(axis = 1)
 
 
 
-fig = plt.figure()
-ax = plt.axes(projection="3d")
-plt.title('cylindrical')
-ax.scatter(radius,theta,z)
+# fig = plt.figure()
+# ax = plt.axes(projection="3d")
+# plt.title('cylindrical')
+# ax.scatter(radius,theta,z)
 
 
 # for each theta find points within eps of theta and take avg. radius of those points 
@@ -90,7 +101,7 @@ ax.scatter(radius,theta,z)
 # z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-# theta = np.linspace(A[:,1].min() - np.pi/4, A[:,1].max() - np.pi/4, N)
+theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
 # print(len(theta))
 
 # parametrize data back into cartesian coordinates
@@ -98,12 +109,15 @@ ax.scatter(radius,theta,z)
 ###########################
 
 X = []
+print(len(z))
+print(len(radius))
 for i in range(0,len(radius)):
     for j in range(0,len(theta)):
         X.append(cart(radius[i],theta[j],z[i]))
 
 # these are now candidate data points
 X = np.array(X)
+print(len(X))
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
