@@ -41,7 +41,7 @@ for i in range(0,len(z)):
 A  = np.array(A)
 
 # split RV into evenly spaced slices
-N = 5
+N = 6
 slice(N, points)
 slices = []
 temp = []
@@ -52,48 +52,15 @@ for j in range(0,len(slice.slices)):
     temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
 
 temp = np.array(temp)
+# radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
 radius = []
-theta = []
+theta = 0
 z = []
 
-
-# for i in range(0,len(temp)):
-# radius.append(temp[0][0].min())
-# z.append(temp[0][2].min())
-# radius.append(temp[0][0].max())
-# z.append(temp[0][2].max())
-for j in range(0,len(temp)):
-    radius.append(temp[j][0].mean())
-    theta.append(temp[j][1].mean())
-    z.append(temp[j][2].mean())
-# for i in range(0,len(temp)):
-#     radius.append(temp[i][0].max())
-#     z.append(temp[i][2].max())
-
-# radius.append(temp[-1][0].min())
-# z.append(temp[-1][2].min())
-# radius.append(temp[-1][0].max())
-# z.append(temp[-1][2].max())
-
-# a = []
-# for i in range(0,len(temp)):
-#     for j in range(0,len(temp[i][0])):
-#         a.append((temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]))
-
-
-# temp1 = np.array(a)
-# radius = temp1[:,0]
-# theta = temp1[:,1]
-# z = temp1[:,2]
-
-
-
-
-# fig = plt.figure()
-# ax = plt.axes(projection="3d")
-# plt.title('cylindrical')
-# ax.scatter(radius,theta,z)
-
+for i in range(0,len(temp)):
+    radius.append(temp[i][0].mean())
+    # theta.append(temp[i][1])
+    z.append(temp[i][2].mean())
 
 # for each theta find points within eps of theta and take avg. radius of those points 
 
@@ -101,37 +68,42 @@ for j in range(0,len(temp)):
 # z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
+# theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
+test_points = []
+count = 0 
+
+while theta < 2*np.pi + np.pi/3:
+    theta += np.pi /3
+    for i in range(0,len(radius)):
+    
+        dist = radius[i]
+
+        test_points.append( [dist * np.cos( theta ), dist * np.sin( theta ), z[i] ] )
+
+print(len(test_points))
 # print(len(theta))
 
 # parametrize data back into cartesian coordinates
 
-###########################
-
-X = []
-print(len(z))
-print(len(radius))
-for i in range(0,len(radius)):
-    for j in range(0,len(theta)):
-        X.append(cart(radius[i],theta[j],z[i]))
-
-# these are now candidate data points
-X = np.array(X)
-print(len(X))
+# X = []
+# for i in range(0,len(radius)):
+#     for j in range(0,len(theta)):
+#         X.append(cart(radius[i],theta[j],z[i]))
+# # these are now candidate data points
+X = np.array(test_points)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 plt.title('Cartesian')
 ax.scatter(X[:,0],X[:,1],X[:,2])
+plt.show()
 
-np.savetxt("cpts_test.csv", X, delimiter=",")
+# np.savetxt("cpts_test.csv", X, delimiter=",")
 
 # setup pre reqs for surface fitting
-
-#################################
 p_ctrlpts = X
-size_u = N+1
-size_v = N
+size_u = N+2
+size_v = N+1
 degree_u = 3
 degree_v = 3
 
@@ -145,13 +117,13 @@ plot_extras = [
         points=surf_curves['u'][0].evalpts,
         name="u",
         color="red",
-        size=10
+        size= 5
     ),
     dict(
         points=surf_curves['v'][0].evalpts,
         name="v",
-        color="black",
-        size=10
+        color="purple",
+        size= 5
     )
 ]
 surf.delta = 0.03
@@ -160,12 +132,10 @@ surf.render(extras=plot_extras)
 
 
 '''
-
 Next steps: 
 - get the evaluated points of generated surface
 - optimize (minimize) distance from generated surface to remapped RV
 - move control points based on this optimization
-
 '''
 
 eval_surf = np.array(surf.evalpts)

@@ -68,7 +68,7 @@ theta = np.array(theta)
 # z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
+theta = np.linspace(A[:,1].min(), A[:,1].max(), 20)
 # print(len(theta))
 
 # parametrize data back into cartesian coordinates
@@ -90,12 +90,12 @@ np.savetxt("cpts_test.csv", X, delimiter=",")
 # setup pre reqs for surface fitting
 p_ctrlpts = X
 size_u = N+1
-size_v = N
+size_v = 20
 degree_u = 3
 degree_v = 3
 
 # Do global surface approximation
-surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
+surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v,centripetal = True)
 
 # Extract curves from the approximated surface
 surf_curves = construct.extract_curves(surf)
@@ -104,13 +104,13 @@ plot_extras = [
         points=surf_curves['u'][0].evalpts,
         name="u",
         color="red",
-        size= 5
+        size=10
     ),
     dict(
         points=surf_curves['v'][0].evalpts,
         name="v",
-        color="purple",
-        size= 5
+        color="black",
+        size=10
     )
 ]
 surf.delta = 0.03
