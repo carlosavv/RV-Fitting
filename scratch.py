@@ -19,26 +19,21 @@ slice(N, points)
 slices = []
 temp = []
 
+layers = []
 bins = slice.bins
 for j in range(0,len(slice.slices)):
-	temp.append([slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))])
+	layers.append([slice.slices[j][:,0],slice.slices[j][:,1],slice.slices[j][:,2]])
 
 
-temp = np.array(temp)
-a = []
-for i in range(0,len(temp)):
-	for j in range(0,len(temp[i][0])):
-		a.append((temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]))
+layers = np.array(layers)
+# for i in range(0,len(temp)):
+# 	for j in range(0,len(temp[i][0])):
+# 		layers.append((temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]))
 
-layers = np.array(a)
-
-x = np.array(layers[:,0])
-y = np.array(layers[:,1])
-z = np.array(layers[:,2])
-
+# print(layers)
 fig = plt.figure()
 ax = plt.axes(projection="3d")
-ax.scatter(layers[:,0],layers[:,1],layers[:,2])
+# ax.scatter(layers[-1][0],layers[-1][1],layers[-1][2])
 
 plt.show()
 
