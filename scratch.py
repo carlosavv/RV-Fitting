@@ -23,46 +23,34 @@ def cart(r,theta,z):
     return x,y,z
 
 def split_into_angles(M,layers):
-	x = []
-	y = []
-	z = []
-	r0 = layers[0][0].max()
-	print(r0)
-	# theta0 = 0
-	# z0 = layers[0][2].mean()
-	k = np.linspace(0,M,M+1)
-	theta = np.linspace(0,2*np.pi,M+1)
-	# x0 = r0*np.cos(theta0)
-	# y0 = r0*np.sin(theta0)
+
+	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M+1)
 
 	xyz_points = []
-	# xyz_points.append([x0,y0,z0])
-	for i in range(0,len(layers)):
-		# for j in range(0,len(layers[i][0])):
-		for ii in range(0,len(theta)):
-			xyz_points.append(
-				[ 	layers[i][0].max()*np.cos(theta[ii]),
-					layers[i][1].max()*np.sin(theta[ii]),
-					layers[i][2].max()
-				]
-			)
+	# print(layers)
+	for i in range(len(theta)-1):
+		xyz_points.append(layers[(layers[:, 1] > theta[i]) & (layers[:, 1] < theta[i + 1])])
+		if theta[i+1] == max(theta):
+			xyz_points.append(layers[(layers[:, 1] > theta[i]+(theta[i+1]-theta[i])/2) & (layers[:,1] < max(theta))])
+
 	data = np.array(xyz_points)
-	# print(data)
-	print(len(data))
 	fig = plt.figure()
 	ax = plt.axes(projection="3d")
-	ax.scatter(data[:,0],data[:,1],data[:,2])
+	t = []
+	for i in range(len(data)):
+		t.append(cart(data[i][:, 0], data[i][:, 1], data[i][:, 2]))
+		# ax.scatter(t[i][:, 0], t[i][:, 1], t[i][:, 2])
+	data = np.array(t)
+
+	for i in range(len(data)):
+		ax.scatter(data[i][0], data[i][1], data[i][2])
 	plt.show()
 	return data
-
-
-	# return mean_r,mean_theta,mean_z
-
 
 points = np.loadtxt("N2_RV_P0.txt")
 # points = preProcess(points)
 
-N = 6
+N = 5
 slice(N, points)
 slices = []
 temp = []
@@ -70,19 +58,40 @@ layers = []
 bins = slice.bins
 
 for j in range(0,len(slice.slices)):
-	layers.append([slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))])
+	temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
 # bins[j]*np.ones(len(slice.slices[j][:,2]))
-layers = np.array(layers)
+temp = np.array(temp)
 
-# for i in range(0,len(temp)):
-# 	for j in range(0,len(temp[i][0])):
-# 		layers.append((temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]))
+for i in range(0,len(temp)):
+	for j in range(0,len(temp[i][0])):
+		layers.append([temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]])
 
 # print(layers)
-split_into_angles(N,layers)
-X = split_into_angles(N,layers)
 
-p_ctrlpts = X
+layers = np.array(layers)
+segments = split_into_angles(N,layers)
+
+# find average points at each segment and slice
+x = []
+y = []
+z = []
+
+for i in range(0,len(segments)):
+# x.append(segments[0][0])
+# print(x)
+# y.append(segments[0][1])
+# z.append(segments[0][2])
+	for j in range(0,len(segments[i])):
+
+		print(segments[i][0][segments[i][2][j] == bins[i]][0])
+
+data = np.array([x,y,z])
+# print(data)
+fig = plt.figure()
+ax = plt.axes(projection= "3d")
+ax.scatter(x,y,z)
+plt.show()
+p_ctrlpts = data
 size_u = N+1
 size_v = N+1
 degree_u = 3
