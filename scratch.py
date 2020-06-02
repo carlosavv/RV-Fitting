@@ -24,7 +24,7 @@ def cart(r,theta,z):
 
 def split_into_angles(M,layers):
 
-	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M+1)
+	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M)
 
 	xyz_points = []
 	# print(layers)
@@ -75,20 +75,31 @@ segments = split_into_angles(N,layers)
 x = []
 y = []
 z = []
-
-for i in range(0,len(segments)):
-# x.append(segments[0][0])
-# print(x)
-# y.append(segments[0][1])
-# z.append(segments[0][2])
-	for j in range(0,len(segments[i])):
-
-		print(segments[i][0][segments[i][2][j] == bins[i]][0])
-
-data = np.array([x,y,z])
-# print(data)
+temp1 = []
+data = []
 fig = plt.figure()
 ax = plt.axes(projection= "3d")
+segment = []
+for i in range(0,len(segments)):
+	segment.append(np.array([segments[i][0],segments[i][1],segments[i][2]]).T)
+
+print(segment[0][segment[0][:,2] == bins[0]])
+
+
+
+
+# print(np.array([segments[0][0],segments[0][1],segments[0][2]]).T)
+# for j in range(0,len(segments)):
+# 	# print(np.array([segments[i][0],segments[i][1],segments[i][2]]).T)
+# 	slice(N,np.array([segments[j][0],segments[j][1],segments[j][2]]).T)
+# # for j in range(0,len(slice.slices)):
+# print(segment_array)
+# 	temp1.append([slice.slices[j][:,0],slice.slices[j][:,1],slice.slices[j][:,2]])
+# ax.scatter(temp1[j][0],temp1[j][1],temp1[j][2])
+
+print(temp1)
+print(x)
+
 ax.scatter(x,y,z)
 plt.show()
 p_ctrlpts = data
