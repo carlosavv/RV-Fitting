@@ -113,7 +113,7 @@ ax.scatter(xbar,ybar,zbar)
 # set up the fitting parameters
 p_ctrlpts = data
 size_u = N+1
-size_v = M+1
+size_v = M
 degree_u = 3
 degree_v = 3
 
