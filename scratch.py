@@ -30,7 +30,7 @@ def split_into_angles(M,layers):
 
 	'''
 
-	theta = np.linspace(-np.pi,np.pi,M+1)
+	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M)
 
 	points = []
 	for i in range(len(theta)-1):
@@ -54,7 +54,7 @@ def split_into_angles(M,layers):
 points = np.loadtxt("N2_RV_P0.txt")
 
 # split data into slices
-N = 6
+N = 5
 slice(N, points)
 slices = []
 temp = []
@@ -96,7 +96,10 @@ for j in range(0,len(chunks)):
 	xbar.append(chunks[j][:,0].mean())
 	ybar.append(chunks[j][:,1].mean())
 	zbar.append(chunks[j][:,2].max())
-
+for i in range(0,N+1):
+	xbar.append(chunks[i][:,0].mean())
+	ybar.append(chunks[i][:,1].mean())
+	zbar.append(chunks[i][:,2].max())
 test = []
 X = np.array([xbar,ybar,zbar]).T
 
@@ -109,11 +112,12 @@ for j in range(0,len(test)):
 
 data = np.array(data)
 ax.scatter(xbar,ybar,zbar)
+print(len(X))
 
 # set up the fitting parameters
-p_ctrlpts = data
-size_u = N+1
-size_v = M
+p_ctrlpts = X
+size_u = N
+size_v = M+1
 degree_u = 3
 degree_v = 3
 
