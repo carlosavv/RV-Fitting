@@ -79,6 +79,7 @@ for i in range(0,len(radius)):
         X.append(cart(radius[i],theta[j],z[i]))
 # these are now candidate data points
 X = np.array(X)
+print(X)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")

@@ -24,33 +24,37 @@ def cart(r,theta,z):
 
 def split_into_angles(M,layers):
 
-	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M)
+	'''
+	
+	function that splits data in angled segments
 
-	xyz_points = []
-	# print(layers)
+	'''
+
+	theta = np.linspace(-np.pi,np.pi,M+1)
+
+	points = []
 	for i in range(len(theta)-1):
-		xyz_points.append(layers[(layers[:, 1] > theta[i]) & (layers[:, 1] < theta[i + 1])])
-		if theta[i+1] == max(theta):
-			xyz_points.append(layers[(layers[:, 1] > theta[i]+(theta[i+1]-theta[i])/2) & (layers[:,1] < max(theta))])
-
-	data = np.array(xyz_points)
-	fig = plt.figure()
-	ax = plt.axes(projection="3d")
+		points.append(layers[(layers[:, 1] > theta[i]) & (layers[:, 1] < theta[i + 1])])
+	data = np.array(points)
+	# fig = plt.figure()
+	# ax = plt.axes(projection="3d")
 	t = []
 	for i in range(len(data)):
 		t.append(cart(data[i][:, 0], data[i][:, 1], data[i][:, 2]))
 		# ax.scatter(t[i][:, 0], t[i][:, 1], t[i][:, 2])
 	data = np.array(t)
 
-	for i in range(len(data)):
-		ax.scatter(data[i][0], data[i][1], data[i][2])
-	plt.show()
+
+	# for i in range(len(data)):
+	# 	ax.scatter(data[i][0], data[i][1], data[i][2])
 	return data
 
-points = np.loadtxt("N2_RV_P0.txt")
-# points = preProcess(points)
+# load data
 
-N = 5
+points = np.loadtxt("N2_RV_P0.txt")
+
+# split data into slices
+N = 6
 slice(N, points)
 slices = []
 temp = []
@@ -59,57 +63,62 @@ bins = slice.bins
 
 for j in range(0,len(slice.slices)):
 	temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
-# bins[j]*np.ones(len(slice.slices[j][:,2]))
 temp = np.array(temp)
 
+# store all slices into layers array
 for i in range(0,len(temp)):
 	for j in range(0,len(temp[i][0])):
 		layers.append([temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]])
 
-# print(layers)
-
+# segment the layers into angled segments
 layers = np.array(layers)
-segments = split_into_angles(N,layers)
+M = N
+segments = split_into_angles(M,layers)
 
 # find average points at each segment and slice
-x = []
-y = []
-z = []
+
 temp1 = []
 data = []
 fig = plt.figure()
 ax = plt.axes(projection= "3d")
 segment = []
+
 for i in range(0,len(segments)):
 	segment.append(np.array([segments[i][0],segments[i][1],segments[i][2]]).T)
+	for j in range(0,len(bins)):
+		temp1.append(segment[i][segment[i][:,2] == bins[j]])
 
-print(segment[0][segment[0][:,2] == bins[0]])
+chunks = np.array(temp1)
+xbar = []
+ybar = []
+zbar = []
+for j in range(0,len(chunks)):
+	xbar.append(chunks[j][:,0].mean())
+	ybar.append(chunks[j][:,1].mean())
+	zbar.append(chunks[j][:,2].max())
 
+test = []
+X = np.array([xbar,ybar,zbar]).T
 
+# this orders the points from least to greatest height (z values)
+for i in range(0,len(bins)):
+	test.append(X[X[:,2] == bins[i]])
+for j in range(0,len(test)):
+	for ii in range(0,len(test[i])):
+		data.append([test[j][ii][0],test[j][ii][1],test[j][ii][2]])
 
+data = np.array(data)
+ax.scatter(xbar,ybar,zbar)
 
-# print(np.array([segments[0][0],segments[0][1],segments[0][2]]).T)
-# for j in range(0,len(segments)):
-# 	# print(np.array([segments[i][0],segments[i][1],segments[i][2]]).T)
-# 	slice(N,np.array([segments[j][0],segments[j][1],segments[j][2]]).T)
-# # for j in range(0,len(slice.slices)):
-# print(segment_array)
-# 	temp1.append([slice.slices[j][:,0],slice.slices[j][:,1],slice.slices[j][:,2]])
-# ax.scatter(temp1[j][0],temp1[j][1],temp1[j][2])
-
-print(temp1)
-print(x)
-
-ax.scatter(x,y,z)
-plt.show()
+# set up the fitting parameters
 p_ctrlpts = data
 size_u = N+1
-size_v = N+1
+size_v = M+1
 degree_u = 3
 degree_v = 3
 
 # Do global surface approximation
-surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v,centripetal = True)
+surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
 
 # Extract curves from the approximated surface
 surf_curves = construct.extract_curves(surf)
@@ -131,14 +140,7 @@ surf.delta = 0.03
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
 
-
-'''
-Next steps: 
-- get the evaluated points of generated surface
-- optimize (minimize) distance from generated surface to remapped RV
-- move control points based on this optimization
-'''
-
+# visualize data samples, original RV data, and fitted surface
 eval_surf = np.array(surf.evalpts)
 
 fig = plt.figure()
