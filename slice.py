@@ -20,11 +20,11 @@ def slice(n, points):
 		if bins[ii+1] == max(bins):
 			slices.append(points[(points[:, 2] > bins[ii]+(bins[ii+1]-bins[ii])/2) & (points[:,2] < max(bins))])
 
-	# fig = plt.figure()
-	# ax = plt.axes(projection="3d")
-	# for i in range(len(slices)):
-		# ax.scatter(slices[i][:, 0], slices[i][:, 1], slices[i][:, 2])
-	# plt.show()
+	fig = plt.figure()
+	ax = plt.axes(projection="3d")
+	for i in range(len(slices)):
+		ax.scatter(slices[i][:, 0], slices[i][:, 1], slices[i][:, 2])
+	plt.show()
 
 def segment(n, points):
 

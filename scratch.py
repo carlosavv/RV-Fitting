@@ -25,11 +25,8 @@ def cart(r,theta,z):
 def split_into_angles(M,layers):
 
 	'''
-	
 	function that splits data in angled segments
-
 	'''
-
 	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M+1)
 
 	points = []
@@ -50,11 +47,10 @@ def split_into_angles(M,layers):
 	return data
 
 # load data
-
-points = np.loadtxt("N2_RV_P0.txt")
+points = np.loadtxt("N2_RV_P1.csv", delimiter = ',')
 
 # split data into slices
-N = 5
+N = 13
 slice(N, points)
 slices = []
 temp = []
