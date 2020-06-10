@@ -8,6 +8,8 @@ from geomdl.visualization import VisMPL as vis
 from slice import slice
 from tools import preProcess
 from geomdl import construct
+from geomdl import convert
+
 
 def cylinder(x,y,z):
     r = np.sqrt(x**2+y**2)
@@ -120,6 +122,9 @@ degree_v = 3
 # Do global surface approximation
 surf = fitting.interpolate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
 
+surf = convert.bspline_to_nurbs(surf)
+print("surf",type(surf))
+
 # Extract curves from the approximated surface
 surf_curves = construct.extract_curves(surf)
 plot_extras = [
@@ -154,3 +159,4 @@ ax = plt.axes(projection = "3d")
 ax.scatter(X[:,0],X[:,1],X[:,2])
 ax.scatter(cpts[:,0],cpts[:,1],cpts[:,2])
 plt.show()
+
