@@ -47,15 +47,18 @@ def vertices(N,points):
 			)
 
 	# store xyz points and set vertex layers
-	vertex_layer1 = np.array([vertices[0][0],vertices[0][1],vertices[0][2]]).T
-	vertex_layer2 = np.array([vertices[1][0],vertices[1][1],vertices[1][2]]).T
-	vertex_layer3 = np.array([vertices[2][0],vertices[2][1],vertices[2][2]]).T
-	vertex_layer4 = np.array([vertices[3][0],vertices[3][1],vertices[3][2]]).T
-	vertex_layer5 = np.array([vertices[4][0],vertices[4][1],vertices[4][2]]).T
-	vertex_layer6 = np.array([vertices[5][0],vertices[5][1],vertices[5][2]]).T
+	vertex_layers = []
+	for i in range(0,len(vertices)):
+		vertex_layers.append(np.array([vertices[i][0],vertices[i][1],vertices[i][2]]).T)
+
+	# vertex_layer2 = np.array([vertices[1][0],vertices[1][1],vertices[1][2]]).T
+	# vertex_layer3 = np.array([vertices[2][0],vertices[2][1],vertices[2][2]]).T
+	# vertex_layer4 = np.array([vertices[3][0],vertices[3][1],vertices[3][2]]).T
+	# vertex_layer5 = np.array([vertices[4][0],vertices[4][1],vertices[4][2]]).T
+	# vertex_layer6 = np.array([vertices[5][0],vertices[5][1],vertices[5][2]]).T
 
 	# store vertex layers into array
-	vertex_layers = np.array([vertex_layer1,vertex_layer2,vertex_layer3,vertex_layer4,vertex_layer5,vertex_layer6])
+	# vertex_layers = np.array([vertex_layer1,vertex_layer2,vertex_layer3,vertex_layer4,vertex_layer5,vertex_layer6])
 
 	#append all of the layers into one array from least to greatest
 	test = []
@@ -69,8 +72,11 @@ def vertices(N,points):
 			temp.append(test[i][j])
 	
 	convex_vertices = np.array(temp)
-	print(len(convex_vertices))  
-	# ax.scatter3D(convex_vertices[:,0],convex_vertices[:,1],convex_vertices[:,2])
-	# plt.show()
+	print(len(convex_vertices))
+
+	fig = plt.figure()
+	ax = plt.axes(projection = '3d')  
+	ax.scatter3D(convex_vertices[:,0],convex_vertices[:,1],convex_vertices[:,2])
+	plt.show()
 
 	return convex_vertices

@@ -27,7 +27,7 @@ def cart(r,theta,z):
 
 # def 
 # load remapped RV data
-points = np.loadtxt("N2_RV_P0.txt")
+points = np.loadtxt('sdata.csv',delimiter = ',')
 # points = preProcess(points)
 x = points[:, 0]
 y = points[:, 1]

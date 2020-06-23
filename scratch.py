@@ -9,7 +9,7 @@ from slice import slice
 from tools import preProcess
 from geomdl import construct
 from geomdl import convert
-
+from geomdl	import exchange
 
 def cylinder(x,y,z):
     r = np.sqrt(x**2+y**2)
@@ -35,8 +35,8 @@ def split_into_angles(M,layers):
 	for i in range(len(theta)-1):
 		points.append(layers[(layers[:, 1] > theta[i]) & (layers[:, 1] < theta[i + 1])])
 	data = np.array(points)
-	# fig = plt.figure()
-	# ax = plt.axes(projection="3d")
+	fig = plt.figure()
+	ax = plt.axes(projection="3d")
 	t = []
 	for i in range(len(data)):
 		t.append(cart(data[i][:, 0], data[i][:, 1], data[i][:, 2]))
@@ -44,15 +44,16 @@ def split_into_angles(M,layers):
 	data = np.array(t)
 
 
-	# for i in range(len(data)):
-	# 	ax.scatter(data[i][0], data[i][1], data[i][2])
+	for i in range(len(data)):
+		ax.scatter(data[i][0], data[i][1], data[i][2])
 	return data
 
 # load data
-points = np.loadtxt("N2_RV_P1.csv", delimiter = ',')
+file = "N2_RV_P0"
+points = np.loadtxt(file + ".csv", delimiter = ',')
 
 # split data into slices
-N = 13
+N = 10
 slice(N, points)
 slices = []
 temp = []
@@ -87,6 +88,10 @@ for i in range(0,len(segments)):
 		temp1.append(segment[i][segment[i][:,2] == bins[j]])
 
 chunks = np.array(temp1)
+
+ax.scatter(chunks[0][:,0],chunks[0][:,1],chunks[0][:,2])
+fig = plt.figure()
+ax = plt.axes(projection= "3d")
 xbar = []
 ybar = []
 zbar = []
@@ -141,10 +146,10 @@ plot_extras = [
         size=10
     )
 ]
-surf.delta = 0.03
+surf.delta = 0.02
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
-
+exchange.export_obj(surf, file + ".obj")
 # visualize data samples, original RV data, and fitted surface
 eval_surf = np.array(surf.evalpts)
 
