@@ -148,21 +148,23 @@ plot_extras = [
         size=10
     )
 ]
-surf.delta = 0.01
+surf.delta = 0.02
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
 exchange.export_obj(surf, "fitted_cyl.obj")
+exchange.export_stl(surf, "fitted_cyl.stl")
 # visualize data samples, original RV data, and fitted surface
 eval_surf = np.array(surf.evalpts)
 np.savetxt("RV_cyl.dat",eval_surf,delimiter = ' ')
 cpts = np.array(surf.ctrlpts)
 ###########
 cyl_cpts = np.array(surf.ctrlpts)
-tube_cpts = np.loadtxt('cpts_tube.dat')
-print(len(cyl_cpts),len(tube_cpts))
+# tube_cpts = np.loadtxt('cpts_tube.dat')
+# print(len(cyl_cpts),len(tube_cpts))
 
 
 np.savetxt("cpts_cyl.dat",cyl_cpts,delimiter = ' ')
+np.savetxt("cyl_cpts.csv",cyl_cpts,delimiter = ',')
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 ax.scatter(eval_surf[:,0],eval_surf[:,1],eval_surf[:,2], 'blue')

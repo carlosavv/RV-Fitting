@@ -13,8 +13,8 @@ from geomdl import BSpline
 
 def helix():
 
-    # create starting paramters for helix
-    M = 8
+    # create starting parameters for helix
+    M = 10
     t = np.linspace(0,2*np.pi/3,M)
     a = 30
     b = 30
@@ -29,27 +29,29 @@ def helix():
     N = []
     B = []
 
-    # create the tangential, normal, and binormal vectors
+    
     for i in range(0,len(s)):
+        # generate a helical axis first
         r.append([a*np.cos(s[i]/np.sqrt(C)),a*np.sin(s[i]/np.sqrt(C)),b*s[i]/np.sqrt(C)])
+
+        # create the tangential, normal, and binormal vectors
         T.append([-a/np.sqrt(C)*np.sin(s[i]/np.sqrt(C)),a/np.sqrt(C)*np.cos(s[i]/np.sqrt(C)),b/np.sqrt(C)])
         N.append([-np.cos(s[i]/np.sqrt(C)),-np.sin(s[i]/np.sqrt(C)),0])
 
     B.append(np.cross(T,N))
 
+    # store them as numpy arrays for convenience
     r = np.array(r)
-    # print(r)
-
-    # scale the vectors up by a factor of 20
     Ts = np.array(T)
     Ns = np.array(N)
     Bs = np.array(B[0])
-    # print(Bs)
 
     # scatter the T, N, and B vectors
-    # fig = plt.figure()
-    # ax = plt.axes(projection = "3d")
-    # # ax.scatter(Ts[:,0],Ts[:,1],Ts[:,2],color = 'r')
+    fig = plt.figure()
+    ax = plt.axes(projection = "3d")
+
+    # these scatter points serves as a check to make sure that the T, N , B vectors work 
+
     # ax.plot(r[:,0],r[:,1],r[:,2],color = 'r')
     # ax.scatter(r[5,0]+Ts[5,0],r[5,1]+Ts[5,1],r[5,2]+Ts[5,2],color = 'b')
     # ax.scatter(r[5,0],r[5,1],r[5,2],color = 'k')
@@ -57,6 +59,7 @@ def helix():
 
     # ax.scatter(Bs[:,0],Bs[:,1],Bs[:,2],color = 'g')
     # ax.scatter(Ns[:,0],Ns[:,1],Ns[:,2],color = 'b')
+
 
 
     helix = []
@@ -70,13 +73,19 @@ def helix():
                         ])
 
     helix = np.array(helix)
+    np.savetxt("RV_tube.txt",helix, delimiter = '   ')
 
-    # ax.scatter(helix[:,0],helix[:,1],helix[:,2])
-    # plt.show()
+
+    ax.scatter(helix[:,0],helix[:,1],helix[:,2])
+    ax.set_title("Helical Tube Point Cloud")
+    ax.set_xlabel('x')
+    ax.set_ylabel('y')
+    ax.set_zlabel('z')
+    plt.show()
     p_ctrlpts = helix
     size_u = M
     size_v = M
-    degree_u = 5
+    degree_u = 3
     degree_v = 3
 
     # Do global surface approximation
@@ -108,9 +117,10 @@ def helix():
     surf.delta = 0.02
     surf.vis = vis.VisSurface()
     surf.render(extras=plot_extras)
-    # exchange.export_obj(surf, "helix.obj")
-    # np.savetxt("RV_tube.dat",tube_pcl,delimiter = ' ')
+    exchange.export_obj(surf, "helix.stl")
+    np.savetxt("RV_tube.dat",tube_pcl,delimiter = ' ')
     # np.savetxt("tube_cpts.dat",tube_cpts,delimiter = ' ')
+    np.savetxt("tube_cpts.csv",tube_cpts,delimiter = ',')
 
 
     # crv = BSpline.Curve()
