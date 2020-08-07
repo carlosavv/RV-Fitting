@@ -14,7 +14,7 @@ from geomdl import BSpline
 def helix():
 
     # create starting parameters for helix
-    M = 10
+    M = 20
     t = np.linspace(0,2*np.pi/3,M)
     a = 30
     b = 30
@@ -73,7 +73,7 @@ def helix():
                         ])
 
     helix = np.array(helix)
-    np.savetxt("RV_tube.txt",helix, delimiter = '   ')
+    np.savetxt("helical_cylinder.csv",helix, delimiter = ',')
 
 
     ax.scatter(helix[:,0],helix[:,1],helix[:,2])

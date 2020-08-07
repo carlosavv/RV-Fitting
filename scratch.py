@@ -10,7 +10,7 @@ from tools import preProcess
 from geomdl import construct
 from geomdl import convert
 from geomdl	import exchange
-
+plt.style.use("seaborn")
 def cylinder(x,y,z):
     r = np.sqrt(x**2+y**2)
     theta = np.arctan2(y,x)
@@ -49,8 +49,8 @@ def split_into_angles(M,layers):
 	return data
 
 # load data
-file = "N2_RV_P0"
-points = np.loadtxt(file + ".csv", delimiter = ',')
+file = "N2_RV_P0_rm"
+points = np.loadtxt(file + ".csv", delimiter = '	')
 
 # split data into slices
 N = 10
@@ -104,7 +104,13 @@ for i in range(0,(N+1)):
 	ybar.append(chunks[i][:,1].mean())
 	zbar.append(chunks[i][:,2].max())
 test = []
+
+xyz = np.loadtxt("N2_RV_P0.dat")
+xyz = preProcess(xyz)
 X = np.array([xbar,ybar,zbar]).T
+np.savetxt("regular_data_pts.csv",X,delimiter = ',')
+
+X = np.loadtxt('regularized_N2_RV_P0.txt',delimiter = '	')
 
 # this orders the points from least to greatest height (z values)
 for i in range(0,len(bins)):
@@ -146,7 +152,7 @@ plot_extras = [
         size=10
     )
 ]
-surf.delta = 0.02
+surf.delta = 0.025
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
 exchange.export_obj(surf, file + ".obj")
@@ -156,12 +162,15 @@ eval_surf = np.array(surf.evalpts)
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 ax.scatter(eval_surf[:,0],eval_surf[:,1],eval_surf[:,2])
-ax.scatter3D(points[:, 0],points[:, 1],points[:, 2])
-ax.scatter(X[:,0],X[:,1],X[:,2])
+# ax.scatter3D(points[:, 0],points[:, 1],points[:, 2])
+# ax.scatter3D(xyz[:, 0],xyz[:, 1],xyz[:, 2])
+
+
+# ax.scatter(X[:,0],X[:,1],X[:,2])
 cpts = np.array(surf.ctrlpts)
+np.savetxt('cpts_N2_RV_P0_rm.txt',cpts, delimiter = '	')
 fig = plt.figure()
 ax = plt.axes(projection = "3d")
 ax.scatter(X[:,0],X[:,1],X[:,2])
 ax.scatter(cpts[:,0],cpts[:,1],cpts[:,2])
 plt.show()
-

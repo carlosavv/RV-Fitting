@@ -118,4 +118,3 @@ def fitSurface(N, points):
 	surf = fitting.interpolate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
 
 	return surf
-
