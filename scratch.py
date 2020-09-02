@@ -53,7 +53,7 @@ file = "N2_RV_P0_rm"
 points = np.loadtxt(file + ".csv", delimiter = '	')
 
 # split data into slices
-N = 10
+N = 18
 slice(N, points)
 slices = []
 temp = []
@@ -95,22 +95,39 @@ ax = plt.axes(projection= "3d")
 xbar = []
 ybar = []
 zbar = []
+
+# for j in range(0,len(chunks)):
+# 	xbar.append(chunks[j][:,0].mean())
+# 	ybar.append(chunks[j][:,1].mean())
+# 	zbar.append(chunks[j][:,2].max())
+# for i in range(0,(N+1)):
+# 	xbar.append(chunks[i][:,0].mean())
+# 	ybar.append(chunks[i][:,1].mean())
+# 	zbar.append(chunks[i][:,2].max())
+
+cylData = []
 for j in range(0,len(chunks)):
-	xbar.append(chunks[j][:,0].mean())
-	ybar.append(chunks[j][:,1].mean())
-	zbar.append(chunks[j][:,2].max())
+	cylData.append(cylinder(chunks[j][:,0],chunks[j][:,1],chunks[j][:,2]))
+
+cartData = []
+for i in range(0,len(cylData)):
+	cartData.append(cart(cylData[i][0].max(),cylData[i][1].mean(),cylData[i][2].max()))
 for i in range(0,(N+1)):
-	xbar.append(chunks[i][:,0].mean())
-	ybar.append(chunks[i][:,1].mean())
-	zbar.append(chunks[i][:,2].max())
+	cartData.append(cart(cylData[i][0].max(),cylData[i][1].mean(),cylData[i][2].max()))
+
+X = np.array(cartData)
+
+
 test = []
 
-xyz = np.loadtxt("N2_RV_P0.dat")
-xyz = preProcess(xyz)
-X = np.array([xbar,ybar,zbar]).T
+rm_file = "N2_RV_P0"
+xyz = np.loadtxt(rm_file + ".dat")
+# xyz = preProcess(xyz)
+# X = np.array([xbar,ybar,zbar]).T
 np.savetxt("regular_data_pts.csv",X,delimiter = ',')
 
-X = np.loadtxt('regularized_N2_RV_P0.txt',delimiter = '	')
+X = np.loadtxt('rev_remapped_cpts.txt',delimiter = '	')
+# file = 'N2_RV_P0_fit'
 
 # this orders the points from least to greatest height (z values)
 for i in range(0,len(bins)):
@@ -120,7 +137,7 @@ for j in range(0,len(test)):
 		data.append([test[j][ii][0],test[j][ii][1],test[j][ii][2]])
 
 data = np.array(data)
-ax.scatter(xbar,ybar,zbar)
+# ax.scatter(xbar,ybar,zbar)
 print(len(X))
 
 # set up the fitting parameters
@@ -155,20 +172,23 @@ plot_extras = [
 surf.delta = 0.025
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
-exchange.export_obj(surf, file + ".obj")
+# exchange.export_obj(surf, file + ".obj")
+exchange.export_obj(surf, rm_file + "_fit.obj")
 # visualize data samples, original RV data, and fitted surface
 eval_surf = np.array(surf.evalpts)
+# eval_surf = preProcess(eval_surf)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
-ax.scatter(eval_surf[:,0],eval_surf[:,1],eval_surf[:,2])
-# ax.scatter3D(points[:, 0],points[:, 1],points[:, 2])
+ax.scatter(eval_surf[:,0],eval_surf[:,1],eval_surf[:,2], color = 'r')
+ax.scatter3D(points[:, 0],points[:, 1],points[:, 2])
 # ax.scatter3D(xyz[:, 0],xyz[:, 1],xyz[:, 2])
-
+ax.scatter(X[:,0],X[:,1],X[:,2])
 
 # ax.scatter(X[:,0],X[:,1],X[:,2])
 cpts = np.array(surf.ctrlpts)
-np.savetxt('cpts_N2_RV_P0_rm.txt',cpts, delimiter = '	')
+# np.savetxt('cpts_N2_RV_P0_rm.txt',cpts, delimiter = '	')
+np.savetxt('cpts_N2_RV_P0.csv',cpts, delimiter = ',')
 fig = plt.figure()
 ax = plt.axes(projection = "3d")
 ax.scatter(X[:,0],X[:,1],X[:,2])

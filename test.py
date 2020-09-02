@@ -10,14 +10,6 @@ np.set_printoptions(threshold=sys.maxsize)
 from tools import preProcess
 from geomdl import exchange
 
-# data = np.loadtxt("sdata.csv",delimiter = ',')
-
-
-# data = preProcess(data)
-# data = np.array([x,y,z]).T
-# print(len(data))
-
-
 # generate a helical axis first
 
 t = np.linspace(0,2*np.pi/3,8)
