@@ -49,11 +49,11 @@ def split_into_angles(M,layers):
 	return data
 
 # load data
-file = "N2_RV_P0_rm"
-points = np.loadtxt(file + ".csv", delimiter = '	')
+file = "tof01_post_es"
+points = np.loadtxt(file + ".csv", delimiter = ',')
 
 # split data into slices
-N = 18
+N = 8
 slice(N, points)
 slices = []
 temp = []
@@ -120,13 +120,15 @@ X = np.array(cartData)
 
 test = []
 
-rm_file = "N2_RV_P0"
-xyz = np.loadtxt(rm_file + ".dat")
+reg_file = "N2_RV_P4"
+xyz = np.loadtxt(reg_file + ".dat")
 # xyz = preProcess(xyz)
 # X = np.array([xbar,ybar,zbar]).T
 np.savetxt("regular_data_pts.csv",X,delimiter = ',')
 
-X = np.loadtxt('rev_remapped_cpts.txt',delimiter = '	')
+# X = np.loadtxt('rev_remapped_cpts.txt',delimiter = '	')
+# X = np.loadtxt('revReg_N2_RV_P4.txt',delimiter = '	')
+
 # file = 'N2_RV_P0_fit'
 
 # this orders the points from least to greatest height (z values)
@@ -172,8 +174,8 @@ plot_extras = [
 surf.delta = 0.025
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
-# exchange.export_obj(surf, file + ".obj")
-exchange.export_obj(surf, rm_file + "_fit.obj")
+exchange.export_obj(surf, file + "_fit.obj")
+# exchange.export_obj(surf, reg_file + "_fit.obj")
 # visualize data samples, original RV data, and fitted surface
 eval_surf = np.array(surf.evalpts)
 # eval_surf = preProcess(eval_surf)
@@ -187,8 +189,8 @@ ax.scatter(X[:,0],X[:,1],X[:,2])
 
 # ax.scatter(X[:,0],X[:,1],X[:,2])
 cpts = np.array(surf.ctrlpts)
-# np.savetxt('cpts_N2_RV_P0_rm.txt',cpts, delimiter = '	')
-np.savetxt('cpts_N2_RV_P0.csv',cpts, delimiter = ',')
+np.savetxt('cpts_'+file,cpts, delimiter = '	')
+# np.savetxt('cpts_N2_RV_P4.csv',cpts, delimiter = ',')
 fig = plt.figure()
 ax = plt.axes(projection = "3d")
 ax.scatter(X[:,0],X[:,1],X[:,2])
