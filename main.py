@@ -9,25 +9,31 @@ from tools import preProcess
 from geomdl import construct
 import numpy as np
 
+'''
+use this to fit a surface on to the remapped RV
+
+'''
 
 def main():
 	# load data
-	path = os.getcwd()
-	os.chdir(path)
-	rvFiles = []
-	for file in glob.glob("*.csv"):
-		rvFiles.append(file)
+	# path = os.getcwd()
+	# os.chdir(path)
+	# rvFiles = []
+	# for file in glob.glob("*.csv"):
+	# 	rvFiles.append(file)
 
-	print(rvFiles)
-	rv_data = []
-	for i in range(0,len(rvFiles)):
-		rv_data.append(np.loadtxt((rvFiles[i]),delimiter = ','))
-	N = 10
-	print(rv_data[1])
-	surfs = []
+	# print(rvFiles)
+	# rv_data = []
+	# for i in range(0,len(rvFiles)):
+	# 	rv_data.append(np.loadtxt((rvFiles[i]),delimiter = ','))
+	# N = 10
+	# print(rv_data[1])
+	# surfs = []
 
-	for i in range(0,len(rv_data)):
-		surfs.append(fitSurface(N,rv_data[i]))
+	# for i in range(0,len(rv_data)):
+	# 	surfs.append(fitSurface(N,rv_data[i]))
+
+
 
 
 	# Extract curves from the approximated surface

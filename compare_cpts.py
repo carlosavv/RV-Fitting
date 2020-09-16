@@ -2,6 +2,10 @@ import numpy as np
 import matplotlib.pyplot as plt 
 from geomdl.visualization import VisMPL as vis
 import scipy.spatial.distance as dist
+plt.style.use('seaborn-bright')
+
+
+
 '''
 todo: compare how the control points move from one frame to the other (toroid experiment)
 
@@ -11,48 +15,39 @@ def distance(a,b):
 	return np.sqrt( (a[:,0]-b[:,0])**2 + (a[:,1]-b[:,1])**2 + (a[:,2]-b[:,2])**2)
 
 
-con_toroid_cpts= np.loadtxt("con_toroid_cpts.csv",delimiter = ',')
+ed_cpts = np.loadtxt('cpts_N2_RV_P0.csv',delimiter = ',')
+es_cpts = np.loadtxt('cpts_N2_RV_P4.csv',delimiter = ',')
+print(len(ed_cpts))
 
-toroid_cpts = np.loadtxt("toroid_cpts.csv",delimiter = ',')
-# print(toroid)
-toroid = np.loadtxt('tapered_toroid.dat',delimiter=' ')
-con_toroid = np.loadtxt('con_tapered_toroid.dat',delimiter=',')
-plt.style.use('seaborn-dark')
+fig = plt.figure(dpi = 125)
+ax = plt.axes(projection = '3d')
+ax.scatter(ed_cpts[:,0],ed_cpts[:,1],ed_cpts[:,2],s = 20,color = 'r')
+ax.scatter(es_cpts[:,0],es_cpts[:,1],es_cpts[:,2],s = 20 ,color = 'b')
+plt.axis('off')
+
 fig = plt.figure()
-ax = plt.axes(projection = "3d")
+ax = plt.axes(projection = '3d')
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+ax.set_zlabel("z axis")
 
 
-# ax.quiver(toroid[:,0],toroid[:,1],con_toroid[:,0],con_toroid[:,1])
-# ax.scatter(toroid[:,0],toroid[:,1],toroid[:,2],color = 'r')
-# ax.scatter(con_toroid[:,0],con_toroid[:,1],con_toroid[:,2], color= 'g', marker = '*')
+ax.scatter(ed_cpts[:,0],ed_cpts[:,1],ed_cpts[:,2],s = 50,color = 'r')
+ax.scatter(es_cpts[:,0],es_cpts[:,1],es_cpts[:,2],s = 50 ,color = 'b')
+for i in range(0,len(ed_cpts)):
+	ax.plot3D([ed_cpts[i,0],es_cpts[i,0]],[ed_cpts[i,1],es_cpts[i,1]],[ed_cpts[i,2],es_cpts[i,2]],color = 'k')
 
+fig = plt.figure(dpi = 125)
+ax = plt.axes(projection = '3d')
+ax.set_xlabel("x axis")
+ax.set_ylabel("y axis")
+ax.set_zlabel("z axis")
 
-distances = []
-distances_cpts = []
-
-# test = []
-for i in range(0,len(toroid)):
-	distances.append(dist.euclidean(toroid[i],con_toroid[i]))
-for i in range(0,len(toroid_cpts)):
-	distances_cpts.append(dist.euclidean(toroid_cpts[i],con_toroid_cpts[i]))
-# test = distance(toroid,con_toroid)
-print(min(distances))
-# print(test[0])
-fig = plt.figure(dpi = 150)
-
-plt.plot(distances,color = 'b', label = 'Surface Points')
-plt.xlabel('data point')
-plt.ylabel('Euclidean Distance')
-plt.title('Distance between N1 and N2')
-plt.legend()
-
-
-fig = plt.figure(dpi = 150)
-plt.plot(distances_cpts,color = 'r', label = 'Control Points')
-plt.xlabel('data point')
-plt.ylabel('Euclidean Distance')
-plt.title('Distance between N1 and N2')
-
-plt.legend()
-# plt.plot(test)
+for i in range(0,len(ed_cpts),17):
+	ax.plot3D([ed_cpts[i,0],es_cpts[i,0]],[ed_cpts[i,1],es_cpts[i,1]],[ed_cpts[i,2],es_cpts[i,2]],color = 'k')
+	ax.scatter(ed_cpts[i,0],ed_cpts[i,1],ed_cpts[i,2],s = 50,color = 'r')
+	ax.scatter(es_cpts[i,0],es_cpts[i,1],es_cpts[i,2],s = 50,color = 'b')
+# plt.axis('off')
 plt.show()
+
+
