@@ -49,97 +49,97 @@ def split_into_angles(M,layers):
 		ax.scatter(data[i][0], data[i][1], data[i][2])
 	return data
 
-# load data
-rm_file = "N2_RV_P4_rm"
-points = np.loadtxt(rm_file + ".csv", delimiter = ',')
+# # load data
+# rm_file = "N2_RV_P4_rm"
+# points = np.loadtxt(rm_file + ".csv", delimiter = ',')
 
-# split data into slices
+# # split data into slices
 N = 15
-slice(N, points)
-slices = []
-temp = []
-layers = []
-bins = slice.bins
+# slice(N, points)
+# slices = []
+# temp = []
+# layers = []
+# bins = slice.bins
 
-for j in range(0,len(slice.slices)):
-	temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
-temp = np.array(temp)
+# for j in range(0,len(slice.slices)):
+# 	temp.append(cylinder(slice.slices[j][:,0],slice.slices[j][:,1],bins[j]*np.ones(len(slice.slices[j][:,2]))))
+# temp = np.array(temp)
 
-# store all slices into layers array
-for i in range(0,len(temp)):
-	for j in range(0,len(temp[i][0])):
-		layers.append([temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]])
+# # store all slices into layers array
+# for i in range(0,len(temp)):
+# 	for j in range(0,len(temp[i][0])):
+# 		layers.append([temp[:,0][i][j],temp[:,1][i][j],temp[:,2][i][j]])
 
-# segment the layers into angled segments
-layers = np.array(layers)
+# # segment the layers into angled segments
+# layers = np.array(layers)
 M = N
-segments = split_into_angles(M,layers)
+# segments = split_into_angles(M,layers)
 
-# find average points at each segment and slice
+# # find average points at each segment and slice
 
-temp1 = []
-data = []
-fig = plt.figure()
-ax = plt.axes(projection= "3d")
-segment = []
+# temp1 = []
+# data = []
+# fig = plt.figure()
+# ax = plt.axes(projection= "3d")
+# segment = []
 
-for i in range(0,len(segments)):
-	segment.append(np.array([segments[i][0],segments[i][1],segments[i][2]]).T)
-	for j in range(0,len(bins)):
-		temp1.append(segment[i][segment[i][:,2] == bins[j]])
+# for i in range(0,len(segments)):
+# 	segment.append(np.array([segments[i][0],segments[i][1],segments[i][2]]).T)
+# 	for j in range(0,len(bins)):
+# 		temp1.append(segment[i][segment[i][:,2] == bins[j]])
 
-chunks = np.array(temp1)
+# chunks = np.array(temp1)
 
-ax.scatter(chunks[0][:,0],chunks[0][:,1],chunks[0][:,2])
-fig = plt.figure()
-ax = plt.axes(projection= "3d")
-# xbar = []
-# ybar = []
-# zbar = []
+# ax.scatter(chunks[0][:,0],chunks[0][:,1],chunks[0][:,2])
+# fig = plt.figure()
+# ax = plt.axes(projection= "3d")
+# # xbar = []
+# # ybar = []
+# # zbar = []
 
+# # for j in range(0,len(chunks)):
+# # 	xbar.append(chunks[j][:,0].mean())
+# # 	ybar.append(chunks[j][:,1].mean())
+# # 	zbar.append(chunks[j][:,2].max())
+# # for i in range(0,(N+1)):
+# # 	xbar.append(chunks[i][:,0].mean())
+# # 	ybar.append(chunks[i][:,1].mean())
+# # 	zbar.append(chunks[i][:,2].max())
+# # X = np.array([xbar,ybar,zbar]).T
+
+# cylData = []
 # for j in range(0,len(chunks)):
-# 	xbar.append(chunks[j][:,0].mean())
-# 	ybar.append(chunks[j][:,1].mean())
-# 	zbar.append(chunks[j][:,2].max())
+# 	cylData.append(cylinder(chunks[j][:,0],chunks[j][:,1],chunks[j][:,2]))
+
+# cartData = []
+# for i in range(0,len(cylData)):
+# 	cartData.append(cart(cylData[i][0].max(),cylData[i][1].max(),cylData[i][2].max()))
 # for i in range(0,(N+1)):
-# 	xbar.append(chunks[i][:,0].mean())
-# 	ybar.append(chunks[i][:,1].mean())
-# 	zbar.append(chunks[i][:,2].max())
-# X = np.array([xbar,ybar,zbar]).T
+# 	cartData.append(cart(cylData[i][0].max(),cylData[i][1].max(),cylData[i][2].max()))
 
-cylData = []
-for j in range(0,len(chunks)):
-	cylData.append(cylinder(chunks[j][:,0],chunks[j][:,1],chunks[j][:,2]))
-
-cartData = []
-for i in range(0,len(cylData)):
-	cartData.append(cart(cylData[i][0].max(),cylData[i][1].max(),cylData[i][2].max()))
-for i in range(0,(N+1)):
-	cartData.append(cart(cylData[i][0].max(),cylData[i][1].max(),cylData[i][2].max()))
-
-X = np.array(cartData)
+# X = np.array(cartData)
 
 
-test = []
+# test = []
 
 # np.savetxt("sampled_"+ rm_file + ".csv",X,delimiter = ',')
 
-reg_file = "N2_RV_P0"
+reg_file = "N2_RV_P4"
 xyz = np.loadtxt(reg_file + ".dat")
 xyz = preProcess(xyz)
 
 
 X = np.loadtxt('sampled_' + reg_file + ".csv",delimiter = ',')
-X = preProcess(X)
+# X = preProcess(X)
 
 # this orders the points from least to greatest height (z values)
-for i in range(0,len(bins)):
-	test.append(X[X[:,2] == bins[i]])
-for j in range(0,len(test)):
-	for ii in range(0,len(test[i])):
-		data.append([test[j][ii][0],test[j][ii][1],test[j][ii][2]])
+# for i in range(0,len(bins)):
+# 	test.append(X[X[:,2] == bins[i]])
+# for j in range(0,len(test)):
+# 	for ii in range(0,len(test[i])):
+# 		data.append([test[j][ii][0],test[j][ii][1],test[j][ii][2]])
 
-data = np.array(data)
+# data = np.array(data)
 # ax.scatter(xbar,ybar,zbar)
 print(len(X))
 
