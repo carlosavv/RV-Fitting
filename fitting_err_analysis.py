@@ -5,32 +5,40 @@ import scipy.spatial.distance as dist
 from scipy.spatial.distance import cdist
 plt.style.use('seaborn')
 
-og_rv = np.loadtxt("c:/Workspace/RV-Mapping.py/transformed_N2_RV_P0.csv",delimiter = ',')
+og_rv_ed = np.loadtxt("d:/Workspace/RV-Mapping.py/transformed_N2_RV_P0.csv",delimiter = ',')
+nurbs_rv_ed = np.loadtxt("N2_RV_P0_NURBS_surf_pts.csv",delimiter = ',')
 
-# test = np.loadtxt("N2_RV_P0.dat")
+og_rv_es = np.loadtxt("d:/Workspace/RV-Mapping.py/transformed_N2_RV_P4.csv",delimiter = ',')
+nurbs_rv_es = np.loadtxt("N2_RV_P4_NURBS_surf_pts.csv",delimiter = ',')
+# for each RV og point, find the minimum distance from the NURBS surface
+min_distances_ed = cdist(nurbs_rv_ed,og_rv_ed,'euclidean').min(axis=1)
+min_distances_es = cdist(nurbs_rv_es,og_rv_es,'euclidean').min(axis=1)
 
+rmse_ed = np.sqrt(np.sum(min_distances_ed**2)/len(min_distances_ed))
+rmse_es = np.sqrt(np.sum(min_distances_es**2)/len(min_distances_es))
 
-nurbs_rv = np.loadtxt("N2_RV_P0_NURBS_surf_pts.csv",delimiter = ',')
+print("rmse_ed = ", rmse_ed)
+print("rmse_es = ", rmse_es)
+
+# fig = plt.figure()
+# plt.plot(min_distances)
+# plt.show()
+
 fig = plt.figure()
 ax = plt.axes(projection = '3d')
 
-ax.scatter(nurbs_rv[:,0],nurbs_rv[:,1],nurbs_rv[:,2])
-ax.scatter(og_rv[:,0],og_rv[:,1],og_rv[:,2])
+ax.scatter(nurbs_rv_ed[:,0],nurbs_rv_ed[:,1],nurbs_rv_ed[:,2],label = 'NURBS Surface Points')
+ax.scatter(og_rv_ed[:,0],og_rv_ed[:,1],og_rv_ed[:,2], label = 'Standard RV Surface Points')
+ax.legend()
 plt.show()
-
-print(len(nurbs_rv))
-print(len(og_rv))
-
-# for each RV og point, find the minimum distance from the NURBS surface
-min_distances = cdist(nurbs_rv,og_rv,'euclidean').min(axis=1)
-
-err = np.sqrt(np.sum(min_distances**2)/len(min_distances))
-print(err)
 
 fig = plt.figure()
-plt.plot(min_distances)
-plt.show()
+ax = plt.axes(projection = '3d')
 
+ax.scatter(nurbs_rv_es[:,0],nurbs_rv_es[:,1],nurbs_rv_es[:,2],label = 'NURBS Surface Points')
+ax.scatter(og_rv_es[:,0],og_rv_es[:,1],og_rv_es[:,2], label = 'standard RV Surface Points')
+ax.legend()
+plt.show()
 # distances = [] 
 # for i in range(0,len(og_rv)):
 	# for j in range(0,len(nurbs_rv)):

@@ -124,15 +124,15 @@ def fit_StandardRV():
 
 	test = []
 
-	# np.savetxt("sampled_"+ rm_file + ".csv",X,delimiter = ',')
+	np.savetxt("sampled_"+ rm_file + ".csv",X,delimiter = ',')
 
 	reg_file = "N2_RV_P0"
 	xyz = np.loadtxt(reg_file + ".dat")
 	xyz = preProcess(xyz)
 
 
-	X = np.loadtxt('sampled_' + reg_file + ".csv",delimiter = ',')
-	X = preProcess(X)
+	# X = np.loadtxt('sampled_' + reg_file + ".csv",delimiter = ',')
+	# X = preProcess(X)
 
 	# this orders the points from least to greatest height (z values)
 	for i in range(0,len(bins)):

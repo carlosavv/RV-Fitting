@@ -172,7 +172,7 @@ plot_extras = [
         size=10
     )
 ]
-surf.delta = 0.025
+surf.delta = 10
 surf.vis = vis.VisSurface()
 surf.render(extras=plot_extras)
 # exchange.export_obj(surf, rm_file + "_fit.obj")
