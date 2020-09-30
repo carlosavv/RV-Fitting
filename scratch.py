@@ -124,7 +124,7 @@ def fit_StandardRV():
 
 	test = []
 
-	np.savetxt("sampled_"+ rm_file + ".csv",X,delimiter = ',')
+	# np.savetxt("sampled_"+ rm_file + ".csv",X,delimiter = ',')
 
 	reg_file = "N2_RV_P0"
 	xyz = np.loadtxt(reg_file + ".dat")
