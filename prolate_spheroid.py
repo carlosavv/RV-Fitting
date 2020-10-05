@@ -4,41 +4,50 @@ from mpl_toolkits import mplot3d
 from geomdl import fitting
 from geomdl import convert
 from geomdl import construct
-from geomdl.visualization import VisMPL as vis
-from slice import slice
-plt.style.use('dark_background')
+from geomdl import exchange 
+from geomdl.visualization import VisPlotly as vis
+plt.style.use('seaborn-bright')
 
-def p_spheroid(mu,nu,phi,a = 10):
-	x = a*np.sinh(mu)*np.sin(nu)*np.cos(phi)
-	y = a*np.sinh(mu)*np.sin(nu)*np.sin(phi)
-	z = a*np.cosh(mu)*np.cos(nu)
-	return x,y,z
-mu = .75
+class Prolate_Spheroid(object):
+    # constructor with parameters to generate a prolate spheriod 
+    def __init__(self,mu,nu,phi,a):
+        self.mu = mu
+        self.nu = nu 
+        self.phi = phi 
+        self.a = a 
+
+    # given the parameters
+    def compute_prolate_spheroid(self):
+        x = self.a*np.sinh(self.mu)*np.sin(self.nu)*np.cos(self.phi)
+        y = self.a*np.sinh(self.mu)*np.sin(self.nu)*np.sin(self.phi)
+        z = self.a*np.cosh(self.mu)*np.cos(self.nu)
+        return x,y,z
+
+a = 10
+mu = .5
 nu = np.linspace(0,np.pi,10)
 phi = np.linspace(0,2*np.pi,10)
 
 sph = []
 
 for i in range(0,len(nu)):
-	for j in range(0,len(phi)):
-		sph.append(p_spheroid(mu,nu[i],phi[j]))
+    for j in range(0,len(phi)):
+        s = Prolate_Spheroid(mu,nu[i],phi[j],a)
+        sph.append(s.compute_prolate_spheroid())
 
+spheroid = np.array(sph)
 
-sph = np.array(sph)
-# new_sph = np.delete(sph,np.argmax(sph))
-# sph = np.delete(sph,0)
-# sph = np.delete(sph,len(sph)-1)
-# print(new_sph)
-fig = plt.figure()
+fig = plt.figure(dpi = 120)
 ax = plt.axes(projection = '3d')
 layers = []
-for i in range(10,90):
-	layers.append([sph[i,0],sph[i,1],sph[i,2]])
-	ax.scatter(sph[i,0],sph[i,1],sph[i,2])
+for i in range(10,70):
+    layers.append([spheroid[i,0],spheroid[i,1],spheroid[i,2]])
+    ax.scatter(spheroid[i,0],spheroid[i,1],spheroid[i,2],s = 50,color = 'r')
+plt.axis('off')
 print(len(layers))
-plt.show()
+# plt.show()
 p_ctrlpts = layers
-size_u = 8
+size_u = 6
 size_v = 10
 degree_u = 3
 degree_v = 3
@@ -66,10 +75,21 @@ plot_extras = [
         size=5
     )
 ]
-surf.delta = 0.025
-surf.vis = vis.VisSurfWireframe()
-surf.render(extras=plot_extras)
+surf.delta = 0.02
+surf.vis = vis.VisSurface()
+# surf.render(extras=plot_extras)
+# exchange.export_obj(surf,"spheroid_es.obj")
 
 evalpts = np.array(surf.evalpts)
 
-print(surf.derivatives(0,0)[0][0])
+E = []
+F = []
+G = []
+uv = np.linspace(0,1,11)
+for i in range(0,len(uv)):
+    E.append(np.dot(surf.derivatives(uv[i],uv[i],1)[0][0],surf.derivatives(uv[i],uv[i],1)[0][0]))
+    F.append(np.dot(surf.derivatives(uv[i],uv[i],1)[0][0],surf.derivatives(uv[i],uv[i],1)[0][1]))
+    G.append(np.dot(surf.derivatives(uv[i],uv[i],1)[0][1],surf.derivatives(uv[i],uv[i],1)[0][1]))
+
+metric_tensor = np.array([E,F,F,G]).T
+print(metric_tensor)

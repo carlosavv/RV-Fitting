@@ -21,8 +21,7 @@ print(len(ed_cpts))
 
 fig = plt.figure(dpi = 125)
 ax = plt.axes(projection = '3d')
-ax.scatter(ed_cpts[:,0],ed_cpts[:,1],ed_cpts[:,2],s = 20,color = 'r')
-ax.scatter(es_cpts[:,0],es_cpts[:,1],es_cpts[:,2],s = 20 ,color = 'b')
+ax.scatter(ed_cpts[:,0],ed_cpts[:,1],ed_cpts[:,2],s = 20,color = 'r') ax.scatter(es_cpts[:,0],es_cpts[:,1],es_cpts[:,2],s = 20 ,color = 'b')
 plt.axis('off')
 
 fig = plt.figure()
