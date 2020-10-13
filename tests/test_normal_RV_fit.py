@@ -30,7 +30,7 @@ def split_into_angles(M,layers):
 	return data
 
 
-data = np.loadtxt('N2_RV_P0.dat')
+data = np.loadtxt('D:/Workspace/RV-Fitting/rv_data/N2_RV_P0.dat')
 fig = plt.figure()
 ax = plt.axes(projection = '3d')
 # ax.scatter(data[:,0],data[:,1],data[:,2])
