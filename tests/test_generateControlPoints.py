@@ -27,7 +27,7 @@ def cart(r,theta,z):
 
 # def 
 # load remapped RV data
-points = np.loadtxt('sdata.csv',delimiter = ',')
+points = np.loadtxt('D:/Workspace/RV-Fitting/rv_data/N2_RV_P0_rm.csv',delimiter = '\t')
 # points = preProcess(points)
 x = points[:, 0]
 y = points[:, 1]
@@ -54,61 +54,49 @@ for j in range(0,len(slice.slices)):
 temp = np.array(temp)
 # radius = np.linspace(A[:,0].max(), A[:,0].min(), N)
 radius = []
-theta = 0
+theta = []
 z = []
 
 for i in range(0,len(temp)):
     radius.append(temp[i][0].mean())
-    # theta.append(temp[i][1])
+    theta.append(temp[i][1])
     z.append(temp[i][2].mean())
-
+theta = np.array(theta)
 # for each theta find points within eps of theta and take avg. radius of those points 
 
 # create evenly spaced heights
 # z = np.linspace(A[:,2].min(), A[:,2].max(), N)
 
 # evenly spaced angles from 0 to 2pi
-# theta = np.linspace(A[:,1].min(), A[:,1].max(), N)
-test_points = []
-count = 0 
-
-while theta < 2*np.pi + np.pi/3:
-    theta += np.pi /3
-    for i in range(0,len(radius)):
-    
-        dist = radius[i]
-
-        test_points.append( [dist * np.cos( theta ), dist * np.sin( theta ), z[i] ] )
-
-print(len(test_points))
+theta = np.linspace(A[:,1].min(), A[:,1].max(), 20)
 # print(len(theta))
 
 # parametrize data back into cartesian coordinates
 
-# X = []
-# for i in range(0,len(radius)):
-#     for j in range(0,len(theta)):
-#         X.append(cart(radius[i],theta[j],z[i]))
-# # these are now candidate data points
-X = np.array(test_points)
+X = []
+for i in range(0,len(radius)):
+    for j in range(0,len(theta)):
+        X.append(cart(radius[i],theta[j],z[i]))
+# these are now candidate data points
+X = np.array(X)
+print(X)
 
 fig = plt.figure()
 ax = plt.axes(projection="3d")
 plt.title('Cartesian')
 ax.scatter(X[:,0],X[:,1],X[:,2])
-plt.show()
 
-# np.savetxt("cpts_test.csv", X, delimiter=",")
+np.savetxt("cpts_test.csv", X, delimiter=",")
 
 # setup pre reqs for surface fitting
 p_ctrlpts = X
-size_u = N+2
-size_v = N+1
+size_u = N+1
+size_v = 20
 degree_u = 3
 degree_v = 3
 
 # Do global surface approximation
-surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v)
+surf = fitting.approximate_surface(p_ctrlpts, size_u, size_v, degree_u, degree_v,centripetal = True)
 
 # Extract curves from the approximated surface
 surf_curves = construct.extract_curves(surf)
@@ -117,13 +105,13 @@ plot_extras = [
         points=surf_curves['u'][0].evalpts,
         name="u",
         color="red",
-        size= 5
+        size=10
     ),
     dict(
         points=surf_curves['v'][0].evalpts,
         name="v",
-        color="purple",
-        size= 5
+        color="black",
+        size=10
     )
 ]
 surf.delta = 0.03

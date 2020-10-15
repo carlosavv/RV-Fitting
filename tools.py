@@ -5,7 +5,7 @@ import sys
 from scipy.spatial import ConvexHull, convex_hull_plot_2d
 np.set_printoptions(threshold=sys.maxsize)
 from slice import slice
-
+from conversions import cylinder2cart
 
 def preProcess(X):
 
@@ -51,16 +51,8 @@ def vertices(N,points):
 	for i in range(0,len(vertices)):
 		vertex_layers.append(np.array([vertices[i][0],vertices[i][1],vertices[i][2]]).T)
 
-	# vertex_layer2 = np.array([vertices[1][0],vertices[1][1],vertices[1][2]]).T
-	# vertex_layer3 = np.array([vertices[2][0],vertices[2][1],vertices[2][2]]).T
-	# vertex_layer4 = np.array([vertices[3][0],vertices[3][1],vertices[3][2]]).T
-	# vertex_layer5 = np.array([vertices[4][0],vertices[4][1],vertices[4][2]]).T
-	# vertex_layer6 = np.array([vertices[5][0],vertices[5][1],vertices[5][2]]).T
 
-	# store vertex layers into array
-	# vertex_layers = np.array([vertex_layer1,vertex_layer2,vertex_layer3,vertex_layer4,vertex_layer5,vertex_layer6])
-
-	#append all of the layers into one array from least to greatest
+	# append all of the layers into one array from least to greatest
 	test = []
 	for i in range(0, len(vertex_layers)):
 		np.random.shuffle(vertex_layers[i])
@@ -80,3 +72,29 @@ def vertices(N,points):
 	plt.show()
 
 	return convex_vertices
+
+def split_into_angles(M,layers):
+
+	'''
+	function that splits data in angled segments
+
+	arguments: M - number of segments
+			   layers - array of layers to be segmented 
+
+	returns: array with segments
+	'''
+	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M+1)
+	points = []
+
+	for i in range(len(theta)-1):
+		points.append(layers[(layers[:, 1] > theta[i]) & (layers[:, 1] < theta[i + 1])])
+	
+	data = np.array(points)
+	t = []
+	
+	for i in range(len(data)):
+		t.append(cylinder2cart(data[i][:, 0], data[i][:, 1], data[i][:, 2]))
+	
+	data = np.array(t)
+
+	return data

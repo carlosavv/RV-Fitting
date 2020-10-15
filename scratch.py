@@ -29,7 +29,9 @@ def cart(r,theta,z):
 def split_into_angles(M,layers):
 
 	'''
-	function that splits data in angled segments
+
+	function that splits data into angled segments
+	
 	'''
 	theta = np.linspace(layers[:,1].min(),layers[:,1].max(),M+1)
 
