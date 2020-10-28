@@ -55,11 +55,12 @@ def compute_stretch(eps,m1,m2):
 	lambda_v = 1/( np.sqrt(1 - 2*(eps[1]/m2[3]) ) )
 	return [lambda_u,lambda_v]
 
+z = np.linspace(0,1,20)
+theta = np.linspace(0,1,20)
+
 # Starting configuration
 R_ed = 4
-theta = np.linspace(0,1,20)
 h_ed = 10
-z = np.linspace(0,1,20)
 r_ed = []
 drdt_ed = []
 drdz_ed = []
@@ -73,16 +74,18 @@ drdz_es = []
 
 for i in range(0,len(z)):
 	for j in range(0,len(theta)):
+		
 		cylinder_ed = Cylinder(R_ed,h_ed,theta[j],z[i])
-		cylinder_es = Cylinder(R_es,h_es,theta[j],z[i])
 		r_ed.append(cylinder_ed.cylinder2cart())
-		r_es.append(cylinder_es.cylinder2cart())
 		drdt_ed.append(cylinder_ed.partial_theta())
-		drdt_es.append(cylinder_es.partial_theta())
 		drdz_ed.append(cylinder_ed.partial_z())
+
+		cylinder_es = Cylinder(R_es,h_es,theta[j],z[i])
+		r_es.append(cylinder_es.cylinder2cart())
+		drdt_es.append(cylinder_es.partial_theta())
 		drdz_es.append(cylinder_es.partial_z())
 
-print(len(drdt_ed))
+# print(len(drdt_ed))
 pts_ed = r_ed
 size_u = 20
 size_v = 20
@@ -157,6 +160,6 @@ for i in range(0,len(metric_tensor_ed)):
 	strain.append(compute_strain(metric_tensor_ed[i],metric_tensor_es[i]))
 	stretch.append(compute_stretch(strain[i],metric_tensor_ed[i],metric_tensor_es[i]))
 
-print(np.array(strain))
+# print(np.array(strain))
 # u-stretch
-print(np.array(stretch))
+# print(np.array(stretch))
