@@ -45,12 +45,14 @@ def compute_metric_tensor(surf,uv):
 		F.append(np.dot(surf.derivatives(uv[i],uv[i],1)[1][0],surf.derivatives(uv[i],uv[i],1)[0][1]))
 		G.append(np.dot(surf.derivatives(uv[i],uv[i],1)[0][1],surf.derivatives(uv[i],uv[i],1)[0][1]))
 
-	return np.array([E,F,F,G]).T
+	return np.array([ E,F,F,G ]).T
 
 def compute_strain(m1,m2):
 	return 0.5*(m2-m1)
 
 def compute_stretch(eps,m1,m2):
+	# print("eps", eps)
+	# print("m2", m2)
 	lambda_u = 1/( np.sqrt(1 - 2*(eps[0]/m2[0]) ) )
 	lambda_v = 1/( np.sqrt(1 - 2*(eps[1]/m2[3]) ) )
 	return [lambda_u,lambda_v]
@@ -59,15 +61,15 @@ z = np.linspace(0,1,20)
 theta = np.linspace(0,1,20)
 
 # Starting configuration
-R_ed = 4
-h_ed = 10
+R_ed = 30
+h_ed = 80
 r_ed = []
 drdt_ed = []
 drdz_ed = []
 
 # Deformed Configuration
-R_es = 3
-h_es = 8
+R_es = 25
+h_es = 75
 r_es = []
 drdt_es = []
 drdz_es = []
@@ -110,8 +112,8 @@ surf_es.delta = 0.025
 surf_es.vis = vis.VisSurface()
 evalpts_es = np.array(surf_es.evalpts)
 
-exchange.export_obj(surf_ed,"clyinder_ed.obj")
-exchange.export_obj(surf_es,"clyinder_es.obj")
+# exchange.export_obj(surf_ed,"clyinder_ed.obj")
+# exchange.export_obj(surf_es,"clyinder_es.obj")
 
 # compute analytical metric tensor for ed phase
 a_E_ed = []
