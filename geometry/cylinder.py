@@ -32,6 +32,11 @@ class Cylinder():
 	def partial_z(self):
 		return [0,0,self.h]
 
+	def partial_z_sin(self,M,eps):
+		return [2*np.pi*M*eps*np.cos(2*np.pi*M*self.z)*np.cos(2*np.pi*self.theta),
+		2*np.pi*M*eps*np.cos(2*np.pi*M*self.z)*np.sin(2*np.pi*self.theta),
+		self.h]
+
 def compute_metric_tensor(surf,uv):
 	'''
 	args: uv - array: linspace from [0,1] to index the metric tensor
