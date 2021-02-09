@@ -10,7 +10,7 @@ import sys
 sys.path.append("../")
 from tools import preProcess
 
-plt.style.use("seaborn")
+plt.style.use("ggplot")
 def make_colormap(seq):
     """Return a LinearSegmentedColormap
     seq: a sequence of floats and RGB-tuples. The floats should be increasing
@@ -187,18 +187,17 @@ import matplotlib as mpl
 import matplotlib.colors as mcolors
 c = mcolors.ColorConverter().to_rgb
 
+
+print(stretch)
 rvb_u = make_colormap(
-    [c('red'), c('green'),0,
-     c('green'),c('blue'),1,c('blue')])
+    [c('red'),c('green'), c('royalblue'),min(stretch[:,1]/max(stretch[:,1])),c('royalblue'),max(stretch[:,1])/max(stretch[:,1]),c('royalblue'),c('green'),c('royalblue')])
+# color_scale = make_colormap(
+#     [c("red"),c('green'),0.25,c('green'), 0.5,c('green'),1,c('blue')])
 
 # rvb_u = make_colormap(
 #     [c('red'), min(a_stretch[:,1])/max(a_stretch[:,1]),c('red'), c('green'),(max(a_stretch[:,1])/max(a_stretch[:,1]) - min(a_stretch[:,1])/max(a_stretch[:,1]))/2,
 #      c('green'),c('blue'),max(a_stretch[:,1])/max(a_stretch[:,1]), c('blue')])
 
-
-surf.delta = 0.02
-surf.vis = vis.VisSurface()
-surf.render(colormap=rvb_u)
 
 # surf_def.delta = 0.02
 # surf_def.vis = vis.VisSurface()
@@ -207,11 +206,19 @@ surf.render(colormap=rvb_u)
 fig, ax = plt.subplots()
 fig.subplots_adjust()
 
-norm_u = mpl.colors.Normalize(vmin = min(a_stretch[:,0]), vmax = min(a_stretch[:,0]))
+norm_u = mpl.colors.Normalize(vmin = min(stretch[:,1]), vmax =max(stretch[:,1]))
 norm_v = mpl.colors.Normalize(vmin = min(a_stretch[:,1]), vmax = max(a_stretch[:,1]))
 
-fig.colorbar(mpl.cm.ScalarMappable(norm=norm_v, cmap=rvb_u),
+fig.colorbar(mpl.cm.ScalarMappable(norm=norm_u, cmap=rvb_u),
              cax=ax, orientation='vertical')
-plt.show()
 # exchange.export_obj(surf,"torus.obj")
-# exchange.export_obj(surf_def,"torus_def.obj")
+# exchange.export_obj(surf_def,"torus_def.obj")|
+
+surf.delta = 0.02
+surf_curves = construct.extract_curves(surf)
+plot_extras = [
+    dict(points=surf_curves["u"][0].evalpts, name="u", color="black", size=10),
+    dict(points=surf_curves["v"][0].evalpts, name="v", color="green", size=10),
+]
+surf.vis = vis.VisSurface()
+surf.render(colormap=rvb_u,extras = plot_extras)

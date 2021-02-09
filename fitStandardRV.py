@@ -3,12 +3,12 @@ from geomdl import fitting
 from geomdl import convert
 
 
-def fit_Standard_RV(N,sampled_data):
+def fit_Standard_RV(N,M,sampled_data):
 
 	# set up the fitting parameters
 	p_ctrlpts = sampled_data
-	size_u = N+1
-	size_v = N+1
+	size_u = M + 1
+	size_v = N + 1
 	degree_u = 3
 	degree_v = 3
 

@@ -8,10 +8,16 @@ from geomdl.visualization import VisMPL as vis
 from slice import slice
 from tools import preProcess, split_into_angles
 from geomdl import construct
-from conversions import cart2cylinder
+from conversions import cart2cylinder,cylinder2cart
 
+'''
 
-def fit_Remapped_RV(N, points, flag=False):
+By default we use flag = False because this is the way to properly fit the remapped RV, 
+however, if we want to just extract the data to be fitted for the pull-back RV
+Fit, then use flag = True
+
+'''
+def fit_Remapped_RV(N,M, points, flag=False):
 
     slice(N, points)
     slices = []
@@ -44,14 +50,11 @@ def fit_Remapped_RV(N, points, flag=False):
     # segment the layers into angled segments
     layers = np.array(layers)
 
-    segments = split_into_angles(N, layers)
+    segments = split_into_angles(M, layers)
 
     # find average points at each segment and slice
 
     chunks = []
-    data = []
-    fig = plt.figure()
-    ax = plt.axes(projection="3d")
     segment = []
 
     for i in range(0, len(segments)):
@@ -60,6 +63,7 @@ def fit_Remapped_RV(N, points, flag=False):
             chunks.append(segment[i][segment[i][:, 2] == bins[j]])
 
     chunks = np.array(chunks)
+
     xbar = []
     ybar = []
     zbar = []
@@ -69,43 +73,55 @@ def fit_Remapped_RV(N, points, flag=False):
 
     if flag == True:
         for j in range(0, len(chunks)):
-            cylData.append(cylinder(chunks[j][:, 0], chunks[j][:, 1], chunks[j][:, 2]))
+            if chunks[j].size == 0:
+                print('')
+            else:
+                cylData.append(cart2cylinder(chunks[j][:, 0], chunks[j][:, 1], chunks[j][:, 2]))
+        
+        for i in range(0, len(cylData)): 
 
-        for i in range(0, len(cylData)):
             cartData.append(
-                cart(cylData[i][0].max(), cylData[i][1].max(), cylData[i][2].max())
-            )
+            cylinder2cart(cylData[i][0].max(), cylData[i][1].max(),
+            cylData[i][2].max()) )
 
         for i in range(0, (N + 1)):
             cartData.append(
-                cart(cylData[i][0].max(), cylData[i][1].max(), cylData[i][2].max())
+                cylinder2cart(cylData[i][0].max(), cylData[i][1].max(), cylData[i][2].max())
             )
+        X = np.array(cartData)
+        # print(X)
+        # ax.scatter(X[:,0],X[:,1],X[:,2])
     else:
+        fig = plt.figure()
+        ax =plt.axes(projection = '3d')
         for j in range(0, len(chunks)):
+            print(j)
             xbar.append(chunks[j][:, 0].mean())
             ybar.append(chunks[j][:, 1].mean())
             zbar.append(chunks[j][:, 2].max())
+            print(len(chunks[j]))
+            ax.scatter(chunks[j][:,0],chunks[j][:,1],chunks[j][:,2])
+            plt.show()
         for i in range(0, (N + 1)):
             xbar.append(chunks[i][:, 0].mean())
             ybar.append(chunks[i][:, 1].mean())
             zbar.append(chunks[i][:, 2].max())
 
         X = np.array([xbar, ybar, zbar]).T
-    test = []
+    # test = []
 
-    # this orders the points from least to greatest height (z values)
-    for i in range(0, len(bins)):
-        test.append(X[X[:, 2] == bins[i]])
-    for j in range(0, len(test)):
-        for ii in range(0, len(test[i])):
-            data.append([test[j][ii][0], test[j][ii][1], test[j][ii][2]])
+    # # this orders the points from least to greatest height (z values)
+    # for i in range(0, len(bins)):
+    #     test.append(X[X[:, 2] == bins[i]])
+    # for j in range(0, len(test)):
+    #     for ii in range(0, len(test[i])):
+    #         data.append([test[j][ii][0], test[j][ii][1], test[j][ii][2]])
 
-    data = np.array(data)
-    ax.scatter(xbar, ybar, zbar)
+    # data = np.array(data)
 
     # set up the fitting parameters
     p_ctrlpts = X
-    size_u = N + 1
+    size_u = M + 1
     size_v = N + 1
     degree_u = 3
     degree_v = 3
@@ -115,4 +131,4 @@ def fit_Remapped_RV(N, points, flag=False):
         p_ctrlpts, size_u, size_v, degree_u, degree_v
     )
 
-    return remapped_NURBS_RV_surf
+    return remapped_NURBS_RV_surf,X
